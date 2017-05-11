@@ -1,13 +1,13 @@
 import sys
 
-#output = "txt"
-output = "py"
+output = "txt"
+#output = "py"
 
 nb_piece_type = 10 # TODO: modifier automatiquement!
 width = 44	 # TODO: modifier automatiquement!
 height = 24	# TODO: modifier automatiquement!
 half_size = 3
-filename = "short"
+filename = "partie_2"
 
 maps = [ {} , {} ]
 
@@ -145,6 +145,7 @@ for line in lines:
 				piece_owner = int(fields[5])
 				piece_type = int(fields[7])
 				maps[player][(x, y)] = chr(ord('M') + piece_type + city_owner * nb_piece_type)
+				#ce truc cree des D sur la carte qui correspondent surement a des unites
 			elif fields[4] == "city":
 				maps[player][(x, y)] = 'c'
 			elif fields[4] == "none":
@@ -177,7 +178,7 @@ for line in lines:
 		y = int(fields[3])
 
 		if fields[0] == "move":
-			direction = int(fields[2])
+			direction = int(fields[4]) #TODO surement fields[4]
 			print_move(direction)
 		elif fields[0] == "set_city_production":
 			piece_type = int(fields[2])
@@ -186,6 +187,7 @@ for line in lines:
 			print "not handled: " + line
 			sys.exit(1)
 		print_map(x, y, player)
+		#print_map_all(1)
 
 if output == "txt":
 	pass

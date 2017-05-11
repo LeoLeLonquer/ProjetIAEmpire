@@ -1,68 +1,71 @@
 # ProjetIAEmpire
 
-##Lancer le jeu
+> Etre victorieux dans tous les combats n’est pas le fin du fin ; soumettre l’ennemi sans croiser le fer, voilà le fin du fin.
+Sun Tzu, 孫子
 
-###En un contre un
+## Lancer le jeu
+
+### En un contre un
 
 1. Lancer trois terminaux
 2. Dans un terminal
-  *  Aller dans dossier ocaml
-  *  Aller dans empire-serveur
-  *  Si fichier Main.native n’existe pas
-      *  Faire make
-  *  Lancer Main.native
+      *  Aller dans dossier ocaml
+      *  Aller dans empire-serveur
+      *  Si fichier Main.native n’existe pas
+          *  Faire make
+      *  Lancer Main.native
 
 3. Dans les deux autres terminaux
-  * Aller dans dossier ocaml
-  * Aller dans empire-client
-  * Si fichier Main.native n’existe pas
-   	    * Faire make
-  * Lancer Main.native
+      * Aller dans dossier ocaml
+      * Aller dans empire-client
+      * Si fichier Main.native n’existe pas
+       	    * Faire make
+      * Lancer Main.native
 
 
-##Contrôles dans Empire
+## Contrôles dans Empire
 
-Flèches directionnelles pour se déplacer sur la map.
-Ville codée par 0.
-Endroit déjà exploré : +
+* Flèches directionnelles pour se déplacer sur la map.
+  Ville codée par 0.
+  Endroit déjà exploré : +
 
-Deux couleurs de joueurs : jaune et rouge
+* Deux couleurs de joueurs : jaune et rouge
 
-sélectionner une ville : F  (il faut être sur la ville)
-      -  n : next value
-      -  p : previous value
-      -  v : validate
-      -  e : escape
+* Sélectionner une ville : F  (il faut être sur la ville)
+      *  n : next value
+      *  p : previous value
+      *  v : validate
+      *  e : escape
 
-avoir la liste des pièces transportées par l’endroit de la ville ou du transporteur : T (il faut être sur la case )
-  	   - n : next value
-       - p : previous value
-       - v : validate
-  	 choisir le déplacement
-       - e : escape
+* Avoir la liste des pièces transportées par l’endroit de la ville ou du transporteur : T (il faut être sur la case )
+  	   * n : next value
+       * p : previous value
+       * v : validate
+  	  Choisir le déplacement
+       * e : escape
 
-Déplacer une armée sur une case :
-      -sélectionner sur déplacement qwerty
+* Déplacer une armée sur une case :
+      * Sélectionner sur déplacement qwerty
 
-se déplacer en qwerty sur de l'hexagonale:
-      -	Q pour aller en haut à gauche
-      -	W pour aller en haut
-      -	A pour aller à gauche
-      -	D pour aller à droite
-      -	X pour aller en bas
-      -	C pour aller en bas à droite
+* Se déplacer en qwerty sur de l'hexagonale:
+      *	Q pour aller en haut à gauche
+      *	W pour aller en haut
+      *	A pour aller à gauche
+      *	D pour aller à droite
+      *	X pour aller en bas
+      *	C pour aller en bas à droite
 
-changer de tour : E
+* Changer de tour : E
 
 
-Messages affiché sur le terminal client :
+* Messages affichés sur le terminal client :
     Message not handled veut rien dire
     create_piece : pièce crée
 
-Obtenir des infos sur les unités :
+* Obtenir des infos sur les unités :
     ocaml/empire-server/src/main
 
-Production d’unités
+* Production d’unités
     army - 5 tours
     fight - 10 tours
     patrol - 15 tours

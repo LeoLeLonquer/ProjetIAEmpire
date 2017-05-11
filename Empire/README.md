@@ -1,6 +1,6 @@
-#Description des fichiers du jeu
+# Description des fichiers du jeu
 
-##Empire client
+## Empire client
 -	Main.ml (open Curses, Connection, Console, Empire, Misc, Stub, Tilemap) =>
 		Définit les fonctions de
     * créations des tiles,
@@ -19,7 +19,7 @@ Lance un thread lié au client et exécute les fonctions définie plus haut
 
 
 
-##Empire server
+## Empire server
 -	Action.ml
 open Empire;;
 * getters:
@@ -116,12 +116,12 @@ open Misc ;;
 
 -	View.ml
 open Empire ;;
-* graphique? 
+* graphique?
     *	mise à jour view
     *	is visible…
 
 
-##Empire Script
+## Empire Script
 -	execute-ia-inter.sh
 -	execute-ia-player.sh
 -	execute-ia.sh
@@ -131,13 +131,13 @@ open Empire ;;
 -	gnuplot.sh
 
 
-##Empire Tee
+## Empire Tee
 -	tee.py
 => This program waits for a connection on <observer-port> (for the observer) and on <player-port> (for the player). Then, it connects to the server and passes messages of the server to both the player and the observer. Messages from the player are sent to the server and messages from the observer are ignored
 
 
 
-##Empire Captain
+## Empire Captain
 -	ai1.py (import os socket sys, algos, behaviour_tree, communicatio, continent, influence, parameters, parser, situation, stats, tools, units)
 -	algos.py (import heapq) => recherche les éléments, trouve une destination et calcul le chemin
 -	communication.py (import tools) => Définit la classe Communication :
