@@ -1,0 +1,58 @@
+Bonjour,
+
+Merci de transferer ce message a vos collegues (et de me mettre en copie).
+Je n'ai retrouve rapidement que votre adresse mail dans ma boite (pas celle des
+autres).
+
+Voici le script permettant de generer les "samples" pour l'apprentissage de vos
+reseaux de neurones. Actuellement, ce script cree, pour chaque coup (deplacement
+d'une unite ou production) (pour les deux joueurs), une carte et la decision.
+
+Pour ce faire, j'ai reduit la carte (44 x 24) pour que les bastons arrivent
+rapidement.
+
+Le script affiche le resultat au format txt (pour vous) et au format ".c". Ce
+dernier vous facilitera l'integration dans un de vos programmes. Si vous
+souhaitez une sortie vers un autre langage, vous pouvez le modifier.
+
+Pour changer la partie manipulee, il faut copier une des parties dans le fichier
+out_S.  Pour changer la taille des "sous-cartes", il faut changer la valeur de
+"half_size".
+
+La partie partie_1 engendre 3087 situations.
+La partie partie_2 engendre 468 situations.
+La partie partie_3 engendre 5384 situations.
+La partie partie_4 engendre 4006 situations.
+
+On pourra en parler vendredi. Il faudra aussi discuter de "comment" integrer
+la vision lointaine dans la boucle. Ce dont nous avons parle en TP ne convient
+pas (la complexite sera trop grande). Une solution serait de creer plusieurs
+cartes :
+-- une "normale",
+-- une ou les cases correspondent a la moyenne de 7x7 cases de la carte
+  normale ;
+-- une ou les cases correspondent a la moyenne de 21x21 cases de la carte
+  normale.
+
+- Du coup, pour les cases proches de l'unite qu'on doit traiter, on pioche les
+infos dans la carte "normale" dans un carre 7x7. Tout autour de ce carre, on
+pioche les 8 carres de cotes 7x7 et on recupere la moyenne des infos dans la
+carte de moyenne 7. Ainsi de suite. Si on le fait pour 1, 7 et 21, cela permet
+de couvrir un secteur de 63x63 avec (7x7 + 2 * 8) entrees pour le reseau de
+neurones, sachant que 2*8 d'entre elles correspondent a des moyennes.
+- Le seule soucis, c'est qu'il faut non pas creer 3 cartes, mais plutot
+(1 + 7x7 + 21x21) etant donne que les unites avancent case par case (elles ne
+font pas des sauts de 7 cases !). Cela correspond a 491 cartes.
+Chaque case de la carte 1x1 contient un caractere. Une case de la carte 7x7 (idem
+pour la carte 21x21) contient un tableau de frequence des types de cases (il
+peut y avoir 18 types differents (non visible, eau, terre, ville, ville amie,
+...)). Une carte 7x7 occupe don (7x7/18)=2.5 moins d'octets que la carte 1x1.
+Pour la carte 21x21 c'est (21x21/18)=24 ! C'est donc gerable.
+- A chaque modification de la carte 1x1, c'est assez simple de modifier les autres
+caes des autres cartes (il faut 491 modifications du coup).
+
+Bonne soiree,
+Cordialement,
+
+-- 
+Eric Alata

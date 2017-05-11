@@ -1,0 +1,55 @@
+### Starting build.
+# Target: sources/Main.ml.depends, tags: { extension:ml, file:sources/Main.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Main.ml > sources/Main.ml.depends
+# Target: sources/Connection.ml.depends, tags: { extension:ml, file:sources/Connection.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Connection.ml > sources/Connection.ml.depends
+# Target: sources/Misc.ml.depends, tags: { extension:ml, file:sources/Misc.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Misc.ml > sources/Misc.ml.depends
+# Target: sources/Misc.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Misc.cmo, file:sources/Misc.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Misc.cmo sources/Misc.ml
+# Target: sources/Console.ml.depends, tags: { extension:ml, file:sources/Console.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Console.ml > sources/Console.ml.depends
+# Target: sources/Empire.ml.depends, tags: { extension:ml, file:sources/Empire.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Empire.ml > sources/Empire.ml.depends
+# Target: sources/Empire.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Empire.cmo, file:sources/Empire.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Empire.cmo sources/Empire.ml
+# Target: sources/Stub.ml.depends, tags: { extension:ml, file:sources/Stub.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Stub.ml > sources/Stub.ml.depends
+# Target: sources/Connection.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Connection.cmo, file:sources/Connection.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Connection.cmo sources/Connection.ml
+# Target: sources/Tilemap.ml.depends, tags: { extension:ml, file:sources/Tilemap.ml, ocaml, ocamldep, quiet, thread, traverse }
+ocamldep.opt -modules sources/Tilemap.ml > sources/Tilemap.ml.depends
+# Target: sources/Console.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Console.cmo, file:sources/Console.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Console.cmo sources/Console.ml
+# Target: sources/Stub.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Stub.cmo, file:sources/Stub.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Stub.cmo sources/Stub.ml
+# Target: sources/Tilemap.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Tilemap.cmo, file:sources/Tilemap.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Tilemap.cmo sources/Tilemap.ml
+# Target: sources/Main.cmo, tags: { byte, compile, extension:cmo, extension:ml, file:sources/Main.cmo, file:sources/Main.ml, implem, ocaml, quiet, thread, traverse }
+ocamlc.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Main.cmo sources/Main.ml
+# Target: sources/Misc.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Misc.cmx, file:sources/Misc.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Misc.cmx sources/Misc.ml
+# Target: sources/Empire.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Empire.cmx, file:sources/Empire.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Empire.cmx sources/Empire.ml
+# Target: sources/Connection.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Connection.cmx, file:sources/Connection.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Connection.cmx sources/Connection.ml
+# Target: sources/Console.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Console.cmx, file:sources/Console.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Console.cmx sources/Console.ml
++ ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Console.cmx sources/Console.ml
+File "_none_", line 1:
+Warning 58: no cmx file was found in path for module Curses, and its interface was not compiled with -opaque
+# Target: sources/Stub.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Stub.cmx, file:sources/Stub.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Stub.cmx sources/Stub.ml
+# Target: sources/Tilemap.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Tilemap.cmx, file:sources/Tilemap.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Tilemap.cmx sources/Tilemap.ml
++ ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Tilemap.cmx sources/Tilemap.ml
+File "_none_", line 1:
+Warning 58: no cmx file was found in path for module Curses, and its interface was not compiled with -opaque
+# Target: sources/Main.cmx, tags: { compile, extension:cmx, extension:ml, file:sources/Main.cmx, file:sources/Main.ml, implem, native, ocaml, quiet, thread, traverse }
+ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Main.cmx sources/Main.ml
++ ocamlopt.opt -c -g -I /Users/leolelonquer/.opam/system/lib/curses -thread -I sources -o sources/Main.cmx sources/Main.ml
+File "_none_", line 1:
+Warning 58: no cmx file was found in path for module Curses, and its interface was not compiled with -opaque
+# Target: sources/Main.native, tags: { dont_link_with, extension:native, file:sources/Main.native, link, native, ocaml, program, quiet, thread, traverse }
+ocamlopt.opt -I /Users/leolelonquer/.opam/system/lib/curses str.cmxa unix.cmxa curses.cmxa -thread threads.cmxa sources/Misc.cmx sources/Connection.cmx sources/Empire.cmx sources/Console.cmx sources/Stub.cmx sources/Tilemap.cmx sources/Main.cmx -o sources/Main.native # cached
+# Compilation successful.
