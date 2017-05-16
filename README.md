@@ -1,7 +1,14 @@
 # ProjetIAEmpire
 
 > Etre victorieux dans tous les combats n’est pas le fin du fin ; soumettre l’ennemi sans croiser le fer, voilà le fin du fin.
-Sun Tzu, 孫子
+
+Sun Tzu, 孫子 :dragon_face:
+
+## Versions de l'IA
+
+1. Utilisation du contexte proche seulement autour d'une unité (rayon de 3 ou plus)
+2. Ajout du contexte lointain (Grands hexagones regroupant des caractéristiques comme le nombre de villes, le nombre d'unités etc)
+3. Ajout d'un général qui définit des points d'intérêt
 
 ## Lancer le jeu
 
