@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 SPORT=$(( ( RANDOM % 1000 ) + 2000 ))
 

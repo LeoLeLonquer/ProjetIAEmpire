@@ -10,6 +10,10 @@ Sun Tzu, 孫子 :dragon_face:
 2. Ajout du contexte lointain (Grands hexagones regroupant des caractéristiques comme le nombre de villes, le nombre d'unités etc)
 3. Ajout d'un général qui définit des points d'intérêt
 
+## TODO
+
+Il faut faire une deuxième interface qui envoie les messages au jeu
+
 ## Lancer le jeu
 
 ### En un contre un
