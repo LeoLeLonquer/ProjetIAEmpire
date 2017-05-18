@@ -1,17 +1,17 @@
-#!/usr/bin/python2.7
+
 import socket
 import sys
 
-import behavior_tree
-import communication
-import continent
-import influence
-import parameters
-import parser
-import situation
-import stats
-import tools
-import units
+from packageai1 import  behavior_tree
+from packageai1 import  communication
+from packageai1 import  continent
+from packageai1 import  influence
+from packageai1 import  parameters
+from packageai1 import  parser
+from packageai1 import  situation
+from packageai1 import  stats
+from packageai1 import  tools
+from packageai1 import  units
 
 do_debug = False
 
@@ -66,7 +66,7 @@ while 1:
 
 	# 1. Process cities.
 	for city in the_situation.player_cities.values():
-		if city.production is not None:	
+		if city.production is not None:
 			continue
 		#print "CITY: ", city.city_id
 		# Follow the decision tree to get candidate pieces.

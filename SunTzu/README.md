@@ -43,14 +43,14 @@ Une décision est ici :
                 - param1 : tjrs==0 dans les log
                 - param2 : tjrs==1 dans les log
         * Du joueur vers le serveur **split.py analyse seulement les messages de type action provenant du joueur**
-            1. *rcv : \[id_player\] -> move \[id_unit\] \[id_type\]* Suivi du msg :
+            1. *rcv : \[id_player\] -> move \[id_unit\] \[id_type\]* \nSuivi du msg :\n
                *action: \[id_player\] -> move \[id_unit\] \[id_direction/x?\] \[param1/y?\] \[id_type/id_direction\]*
                 - x,y : coordonnées actuelles
                 - id_unit : identifiant propre à l'unité du joueur (commence à 90)
                 - id_direction : avec dir=[ (+1,  0), (+1, -1), ( 0, -1), (-1,  0), (-1, +1), ( 0, +1) ]
                 - param1 : ?? jamais lu dans split
                 - id_type : type d'unité (1,2,3...**A COMPLETER**)
-            2. *rcv: \[id_player1\] -> set_city_production \[id_city\] \[param\]* Suivi du msg :
+            2. *rcv: \[id_player1\] -> set_city_production \[id_city\] \[param\]* \nSuivi du msg :\n
                *action: \[id_player1\] -> set_city_production \[id_city\] \[id_type\] \[param1\] \[param2\]*
                - id_city : identifiant de la ville
                - id_type : type d'unité (1,2,3...**A COMPLETER**)

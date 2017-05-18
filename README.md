@@ -36,17 +36,17 @@ Il faut faire une deuxième interface qui envoie les messages au jeu
 
 ## Contrôles dans Empire
 
-* Flèches directionnelles pour se déplacer sur la map.
-  Ville codée par 0.
+* Flèches directionnelles pour se déplacer sur la map.\n
+  Ville codée par 0.\n
   Endroit déjà exploré : +
 
 * Deux couleurs de joueurs : jaune et rouge
 
 * Sélectionner une ville : F  (il faut être sur la ville)
-      *  n : next value
-      *  p : previous value
-      *  v : validate
-      *  e : escape
+      * n : next value
+      * p : previous value
+      * v : validate
+      * e : escape
 
 * Avoir la liste des pièces transportées par l’endroit de la ville ou du transporteur : T (il faut être sur la case )
   	   * n : next value
@@ -68,17 +68,18 @@ Il faut faire une deuxième interface qui envoie les messages au jeu
 
 * Changer de tour : E
 
+## Autres infos
 
-* Messages affichés sur le terminal client :
-    Message not handled veut rien dire
-    create_piece : pièce crée
+* Messages affichés sur le terminal client : \n
+    Message not handled veut rien dire \n
+    create_piece : pièce créée
 
-* Obtenir des infos sur les unités :
-    ocaml/empire-server/src/main
+* Obtenir des infos sur les unités : \n
+    **ocaml/empire-server/src/main**
 
 * Production d’unités
-    army - 5 tours
-    fight - 10 tours
-    patrol - 15 tours
-    battleship - 40 tours
-    transport - 30 tours
+    * army - 5 tours
+    * fight - 10 tours
+    * patrol - 15 tours
+    * battleship - 40 tours
+    * transport - 30 tours
