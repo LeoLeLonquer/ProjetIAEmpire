@@ -1,5 +1,5 @@
 
-class piece:
+class Piece:
     def __init__(self,pieceid,piecetypeid,x,y):
         self.pieceid=pieceid
         self.piecetypeid=piecetypeid
@@ -7,43 +7,46 @@ class piece:
         self.y=y
 
     def get_pieceid(self):
-        return pieceid
+        return self.pieceid
 
     def get_piecetypeid(self):
-        return piecetypeid
+        return self.piecetypeid
 
     def get_x(self):
-        return x
+        return self.x
 
     def get_y(self):
-        return y
+        return self.y
 
     def get_position(self):
-        return x,y
+        return self.x,self.y
 
+    def set_position(self,x,y):
+        self.x=x
+        self.y=y
 
-class pieceslist:
+class Pieceslist:
     def __init__(self):
         self.piecesdico={}
 
-    def get_piecesdico(self):
+    def get_pieces(self):
         return self.piecesdico
 
     def get_piece(self,pieceid):
-        if (piecesid in self.piecesdico.keys()):
-            return piecesdico[pieceid]
+        if (pieceid in self.piecesdico.keys()):
+            return self.piecesdico[pieceid]
         else :
-            return none
+            return None
 
     def add(self,pieceid,piece):
         self.piecesdico[piece.get_pieceid()]=piece
 
     def remove(self,pieceid):
-        if (piecesid in self.piecesdico.keys()):
+        if (pieceid in self.piecesdico.keys()):
             del self.pieceid[pieceid]
 
 
-class piecetype:
+class Piecetype:
     def __init__(self,id,name,symbol,move):
         self.id=id
         self.name=name
@@ -64,21 +67,26 @@ class piecetype:
 
 
 
-class piecetypelist:
+class Piecestypeslist:
     def __init__ (self):
-        self.piecestypesdico= {0:piecetype(0,"ARMY",'A',1),
-                               1:piecetype(1,"FIGHT",'F',8),
-                               2:piecetype(2,"TRANSPORT",'T',2),
-                               3:piecetype(3,"PATROL",'P',4),
-                               4:piecetype(4,"BATTLESHIP",'B',2)}
-
+        self.piecestypesdico= {0:Piecetype(0,"ARMY",'A',1),
+                               1:Piecetype(1,"FIGHT",'F',8),
+                               2:Piecetype(2,"TRANSPORT",'T',2),
+                               3:Piecetype(3,"PATROL",'P',4),
+                               4:Piecetype(4,"BATTLESHIP",'B',2)
+                               }
+        self.nbpiecetype=10 #TODO à modifier automatiquement
 
 
     def get_piecestypesdico(self):
         return self.piecestypesdico
 
+    def get_nbpiecetype(self):
+        return self.nbpiecetype
+
     def get_piecetype(self,piecetypeid):
         if (piecetypeid in self.piecestypesdico.key()):
-            return piecetypedico[piecetypeid]
+            return self.piecetypedico[piecetypeid]
         else :
             return None
+

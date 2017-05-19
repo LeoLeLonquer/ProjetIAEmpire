@@ -144,7 +144,7 @@ for line in lines:
 			elif fields[4] == "piece":
 				piece_owner = int(fields[5])
 				piece_type = int(fields[7])
-				maps[player][(x, y)] = chr(ord('M') + piece_type + city_owner * nb_piece_type)
+				maps[player][(x, y)] = chr(ord('M') + piece_type + piece_owner * nb_piece_type)
 			elif fields[4] == "city":
 				maps[player][(x, y)] = 'c'
 			elif fields[4] == "none":

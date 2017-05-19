@@ -43,17 +43,16 @@ Il faut faire une deuxième interface qui envoie les messages au jeu
 * Deux couleurs de joueurs : jaune et rouge
 
 * Sélectionner une ville : F  (il faut être sur la ville)
-      * n : next value
-      * p : previous value
-      * v : validate
-      * e : escape
+  * n : next value
+  * p : previous value
+  * v : validate
+  * e : escape
 
 * Avoir la liste des pièces transportées par l’endroit de la ville ou du transporteur : T (il faut être sur la case )
-  	   * n : next value
-       * p : previous value
-       * v : validate
-  	  Choisir le déplacement
-       * e : escape
+  * n : next value
+  * p : previous value
+  * v : validate => Choisir le déplacement
+  * e : escape
 
 * Déplacer une armée sur une case :
       * Sélectionner sur déplacement qwerty
@@ -70,11 +69,11 @@ Il faut faire une deuxième interface qui envoie les messages au jeu
 
 ## Autres infos
 
-* Messages affichés sur le terminal client : \n
-    Message not handled veut rien dire \n
+* Messages affichés sur le terminal client : 
+    Message not handled veut rien dire
     create_piece : pièce créée
 
-* Obtenir des infos sur les unités : \n
+* Obtenir des infos sur les unités :
     **ocaml/empire-server/src/main**
 
 * Production d’unités

@@ -1,13 +1,18 @@
 import re
 import sys
 
-import situation
-
+from game_map import *
+from units import *
+from cities import *
+from game_status import *
 
 class Parser:
-	def __init__(self, the_situation, handlers):
-		self.handlers = handlers
-		self.the_situation = the_situation
+	def __init__(self, the_game_status,the_map,the_cities,the_units):
+		self.the_map = the_map
+		self.the_game_status=the_game_status
+		self.the_map=the_map
+		self.the_cities=the_cities
+		self.the_units=the_units
 		self.re_transport_in_city = re.compile(r"transport in-city (\d+) (\d+)")
 
 		# The order matters: it must be the same of both rexes and handlers (see parse method).
@@ -65,156 +70,141 @@ class Parser:
 				]
 
 	def parse_set_visible_none(self, groups):
-		location = int(groups.group(1)), int(groups.group(2))
-		terrain = self.the_situation.GROUND if groups.group(3) == "ground" else self.the_situation.WATER
-		self.the_situation.set_visible_none(location, terrain)
-		for handler in self.handlers:
-			handler.set_visible_none(location, terrain)
+		(x,y) = int(groups.group(1)), int(groups.group(2))
+		terrain =  groups.group(3)
+		if terrain == "water":
+			self.the_map.update_map(x,y,'A')
+		else:
+			self.the_map.update_map(x,y,'B')
 
 	def parse_set_visible_owned_city(self, groups):
-		location = int(groups.group(1)), int(groups.group(2))
-		terrain = self.the_situation.GROUND if groups.group(3) == "ground" else self.the_situation.WATER
+		(x,y) = int(groups.group(1)), int(groups.group(2))
 		city_id = int(groups.group(4))
-		owner = int(groups.group(5))
-		self.the_situation.set_visible_owned_city(location, terrain, city_id, owner)
-		for handler in self.handlers:
-			handler.set_visible_owned_city(location, terrain, city_id, owner)
+		city_owner = int(groups.group(5))
+		if self.the_game_status.get_player_id()==None : # La première ville découverte est celle du joueur
+			self.the_game_status.set_player_id(city_owner)
+		if city_owner==self.the_game_status.get_player_id():
+			self.the_cities.add(city_id,City(city_id,x,y))
+		self.the_map.update_map(x,y,chr(ord('C') + city_owner))
+
 
 	def parse_set_visible_city(self, groups):
-		location = int(groups.group(1)), int(groups.group(2))
-		terrain = self.the_situation.GROUND if groups.group(3) == "ground" else self.the_situation.WATER
+		(x,y) = int(groups.group(1)), int(groups.group(2))
 		city_id = int(groups.group(4))
-		self.the_situation.set_visible_city(location, terrain, city_id)
-		for handler in self.handlers:
-			handler.set_visible_city(location, terrain, city_id)
+		self.the_map.update_map(x,y,'c')
+
 
 	def parse_set_visible_piece(self, groups):
-		location = int(groups.group(1)), int(groups.group(2))
-		terrain = self.the_situation.GROUND if groups.group(3) == "ground" else self.the_situation.WATER
-		owner = int(groups.group(4))
-		piece_id = int(groups.group(5))
+		(x,y) = int(groups.group(1)), int(groups.group(2))
+		piece_owner = int(groups.group(4))
 		piece_type_id = int(groups.group(6))
-		piece_hits = int(groups.group(7))
-		self.the_situation.set_visible_piece(location, terrain, owner, piece_id, piece_type_id, piece_hits)
-		for handler in self.handlers:
-			handler.set_visible_piece(location, terrain, owner, piece_id, piece_type_id, piece_hits)
+		self.the_map.update_map(x,y,chr(ord('M') + piece_type_id + piece_owner * self.pieces_types_list.get_nbpiecetype()))
 
 	def parse_set_explored(self, groups):
-		location = int(groups.group(1)), int(groups.group(2))
-		terrain = self.the_situation.GROUND if groups.group(3) == "ground" else self.the_situation.WATER
-		self.the_situation.set_explored(location, terrain)
-		for handler in self.handlers:
-			handler.set_explored(location, terrain)
+		(x,y) = int(groups.group(1)), int(groups.group(2))
+		terrain = groups.group(3)
+		if terrain == "water":
+			self.the_map.update_map(x,y,'a')
+		else:
+			self.the_map.update_map(x,y,'b')
 
 	def parse_width(self, groups):
-		self.the_situation.set_width(int(groups.group(1)))
-		for handler in self.handlers:
-			handler.set_width(int(groups.group(1)))
-
-	def parse_leave_city(self, groups):
-		self.the_situation.leave_city(int(groups.group(1)), int(groups.group(2)))
-		for handler in self.handlers:
-			handler.leave_city(int(groups.group(1)), int(groups.group(2)))
-
-	def parse_enter_city(self, groups):
-		self.the_situation.enter_city(int(groups.group(1)), int(groups.group(2)))
-		for handler in self.handlers:
-			handler.enter_city(int(groups.group(1)), int(groups.group(2)))
-
-	def parse_enter_piece(self, groups):
-		self.the_situation.enter_piece(int(groups.group(1)), int(groups.group(2)))
-		for handler in self.handlers:
-			handler.enter_piece(int(groups.group(1)), int(groups.group(2)))
-
-	def parse_leave_piece(self, groups):
-		self.the_situation.leave_piece(int(groups.group(1)), int(groups.group(2)))
-		for handler in self.handlers:
-			handler.leave_piece(int(groups.group(1)), int(groups.group(2)))
-
-	def parse_leave_terrain(self, groups):
-		location = int(groups.group(2)), int(groups.group(3))
-		self.the_situation.leave_terrain(int(groups.group(1)), location)
-		for handler in self.handlers:
-			handler.leave_terrain(int(groups.group(1)), location)
+		self.the_map.set_width(int(groups.group(1)))
 
 	def parse_height(self, groups):
-		self.the_situation.set_height(int(groups.group(1)))
-		for handler in self.handlers:
-			handler.set_height(int(groups.group(1)))
+		self.the_map.set_height(int(groups.group(1)))
+
+
+		#le programme split ignore les messages dans ces cas là :
+		# if fields[0] in ["city-units-limit", "created-units-limit", "create_piece", \
+		# 		 "delete_piece", "enter_city", "get_action", "ko-invasion", \
+		# 		 "leave_city", "leave_terrain", "lose_city", "ok-invasion", \
+		# 		 "winner", "move", "enter_piece", "leave_piece"]:
+
+	def parse_leave_city(self, groups):
+		pass
+
+	def parse_enter_city(self, groups):
+		pass
+
+	def parse_enter_piece(self, groups):
+		pass
+
+	def parse_leave_piece(self, groups):
+		pass
+
+	def parse_leave_terrain(self, groups):
+		pass
 
 	def parse_player_id(self, groups):
-		self.the_situation.set_player_id(int(groups.group(1)))
-		for handler in self.handlers:
-			handler.set_player_id(int(groups.group(1)))
+		self.the_game_status.set_player_id(int(groups.group(1)))
 
-	def parse_piece_types(self, groups):
-		piece_types = groups.group(1).split(";")
-		piece_types = [x.split("#") for x in piece_types]
-		result = {}
-		terrain = {"water": self.the_situation.WATER, "ground": self.the_situation.GROUND}
-		for piece_type in piece_types:
-			info = {}
-			info["piece_type_id"] = int(piece_type[0])
-			info["name"] = piece_type[1]
-			info["symbol"] = piece_type[2]
-			info["terrains"] = [terrain[x] for x in piece_type[3].split(":")]
-			info["build_time"] = int(piece_type[4])
-			info["strength"] = int(piece_type[5])
-			info["max_hits"] = int(piece_type[6])
-			info["speed"] = int(piece_type[7])
-			info["capacity"] = int(piece_type[8])
-			info["autonomy"] = None if piece_type[9] == "" else int(piece_type[9])
-			info["transportable"] = [] if piece_type[10] == "" else [int(x) for x in piece_type[10].split(":")]
-			info["visibility"] = int(piece_type[11])
-			info["can_invade"] = piece_type[12] in ["true", "True"]
-			result[info["piece_type_id"]] = situation.PieceType(info)
-		self.the_situation.set_piece_types(result)
-		for handler in self.handlers:
-			handler.set_piece_types(result)
+	def parse_piece_types(self, groups): # ce type de message n'est jamais reçu à priori
+		raise Exception.parse_piece_types
+		# piece_types = groups.group(1).split(";")
+		# piece_types = [x.split("#") for x in piece_types]
+		# result = {}
+		# terrain = {"water": self.the_situation.WATER, "ground": self.the_situation.GROUND}
+		# for piece_type in piece_types:
+		# 	info = {}
+		# 	info["piece_type_id"] = int(piece_type[0])
+		# 	info["name"] = piece_type[1]
+		# 	info["symbol"] = piece_type[2]
+		# 	info["terrains"] = [terrain[x] for x in piece_type[3].split(":")]
+		# 	info["build_time"] = int(piece_type[4])
+		# 	info["max_hits"] = int(piece_type[6])
+		# 	info["speed"] = int(piece_type[7])
+		# 	info["capacity"] = int(piece_type[8])
+		# 	info["autonomy"] = None if piece_type[9] == "" else int(piece_type[9])
+		# 	info["transportable"] = [] if piece_type[10] == "" else [int(x) for x in piece_type[10].split(":")]
+		# 	info["visibility"] = int(piece_type[11])
+		# 	info["can_invade"] = piece_type[12] in ["true", "True"]
+		# 	result[info["piece_type_id"]] = situation.PieceType(info)
+		# self.the_situation.set_piece_types(result)
+		# for handler in self.handlers:
+		# 	handler.set_piece_types(result)
 
 	def parse_create_piece(self, groups):
 		piece_id = int(groups.group(1))
 		piece_type_id = int(groups.group(2))
 		city_id = int(groups.group(3))
-		piece_hits = int(groups.group(4))
-		self.the_situation.create_piece(piece_id, piece_type_id, city_id, piece_hits)
-		for handler in self.handlers:
-			handler.create_piece(piece_id, piece_type_id, city_id, piece_hits)
+		self.the_cities.get_city(city_id).set_production(None)
+		(x,y) = self.the_cities.get_city(city_id).get_pos()
+		self.the_units.add(piece_id,Piece(piece_id,piece_type_id,x,y))
 
-	def parse_delete_piece(self, groups):
+
+	def parse_delete_piece(self, groups): # pas besoin de mettre à jour la map delete_piece est suivi de set_visible
+										  # mis à part si la pièce est dans une ville
 		piece_id = int(groups.group(1))
-		self.the_situation.delete_piece(piece_id)
-		for handler in self.handlers:
-			handler.delete_piece(piece_id)
+		self.the_units.remove(piece_id)
+
 
 	def parse_move(self, groups):
 		piece_id = int(groups.group(1))
-		location = int(groups.group(2)), int(groups.group(3))
-		self.the_situation.move(piece_id, location)
-		for handler in self.handlers:
-			handler.move(piece_id, location)
+		(x,y) = int(groups.group(2)), int(groups.group(3))
+		self.the_units.get_piece(piece_id).set_position(x,y)
 
 	def parse_invade_city(self, groups):
 		city_id = int(groups.group(1))
-		location = int(groups.group(2)), int(groups.group(3))
-		self.the_situation.invade_city(city_id, location)
-		for handler in self.handlers:
-			handler.invade_city(city_id, location)
+		(x,y) = int(groups.group(2)), int(groups.group(3))
+		self.the_cities.add(City(city_id, x,y))
 
 	def parse_lose_city(self, groups):
 		city_id = int(groups.group(1))
-		self.the_situation.lose_city(city_id)
-		for handler in self.handlers:
-			handler.lose_city(city_id)
+		location=self.the_cities.get_city(city_id).get_pos()
+		for unit in self.the_units:
+			if location==unit.get_position():
+				self.the_units.remove(unit.get_pieceid())
 
-	def parse_winner(self, groups):
-		if int(groups.group(1)) == self.the_situation.player_id:
+		self.the_cities.remove(city_id)
+
+
+	def parse_winner(self, groups): # je pense qu'on ne passse jamais ici car méthode end de situation n'existe pas
+		if int(groups.group(1)) == self.game_status.get_playerid():
 			print "Winner is you"
 		else:
 			print "Winner is the enemy"
-		self.the_situation.end()
-		for handler in self.handlers:
-			handler.end()
+		#self.the_situation.end()
 		sys.exit(0)
 
 	def parse_ok_invasion(self, groups):
@@ -238,5 +228,5 @@ class Parser:
 			if groups:
 				self.proxy_handlers[i](groups)
 				return
-		self.the_situation.show()
+		#self.the_situation.show()
 		raise Exception("error: not handled: " + message)
