@@ -12,7 +12,8 @@ from result import maps,decisions_piece_type,decisions
 from result1 import maps1,decisions_piece_type1,decisions1
 from result2 import maps2, decisions_piece_type2, decisions2
 from result3 import maps3,decisions_piece_type3,decisions3
-#from result4 import maps4,decisions_piece_type4,decisions4
+import os
+from result4 import maps4,decisions_piece_type4,decisions4
 
 possible_actions = 7
 #DEF type unite
@@ -186,15 +187,95 @@ correct_prediction_city= tf.equal(out_decision_city, y_true_cls)
 accuracy_city= tf.reduce_mean(tf.cast(correct_prediction_city, tf.float32))
 
 
+# Best validation accuracy seen so far.
+best_validation_accuracy = 0.0
+saver = tf.train.Saver()
+save_dir = 'checkpoints/'
+if not os.path.exists(save_dir):
+    os.makedirs(save_dir)
+save_path = os.path.join(save_dir, 'best_validation')
 
 
 
+
+def predict_cls_validation():
+    return predict_cls(maps = maps4,
+                       labels = decisions4,
+                       decisions = decisions4,
+                       decisions_piece_type = decisions_piece_type4)
+    
+def create_label_test(decisions):
+    labels_create = np.array(shape = (len(decisions),1))
+    for i in range(len(decisions)):
+        decision = decisions[i]
+        decision_tab = np.zeros((1,7))  
+        decision_tab[0][decision] = 1
+        for j in range(len(decision_tab)):
+            labels_create[i][0] = decision_tab
+    return labels_create
+
+
+def predict_cls(maps, labels, decisions, decisions_piece_type):
+    nb_maps = len(maps)
+    decision_tab = create_label_test(decisions)
+
+    cls_pred = np.zeros(shape=(1,nb_maps))
+    for i in range(nb_maps):
+        decision_piece_type = decisions_piece_type[i]
+        mape = maps[i]
+        tab_mape = mape.split()
+        tab_float = np.zeros(shape = (1, len(tab_mape)))
+        for j in range(len(tab_mape)):
+            tab_float[0][j] = ord(tab_mape[j])
+        if decision_piece_type == ARMY :
+            feed_dict_train = {input_layer_terre: tab_float,
+                                   y_true: decision_tab[i]}
+            cls_pred[0][i] = session.run(out_layer_terre, feed_dict=feed_dict_train)
+        if decision_piece_type == FLIGHT :
+            feed_dict_train = {input_layer_flight: tab_float,
+                                   y_true: decision_tab[i]}
+            cls_pred[0][i] = session.run(out_layer_flight, feed_dict=feed_dict_train)
+        if decision_piece_type == BOAT :
+            feed_dict_train = {input_layer_boat : tab_float,
+                                   y_true: decision_tab[i]}
+            cls_pred[0][i] = session.run(out_layer_boat, feed_dict=feed_dict_train)    
+        if decision_piece_type == CITY :
+            feed_dict_train = {input_layer_city : tab_float,
+                                   y_true: decision_tab[i]}
+            cls_pred[0][i] = session.run(out_layer_city, feed_dict=feed_dict_train)
+
+   
+    correct = (decisions == cls_pred)
+
+    return correct, cls_pred
+
+  
+def cls_accuracy(correct):
+    # Calculate the number of correctly classified images.
+    # When summing a boolean array, False means 0 and True means 1.
+    correct_sum = correct.sum()
+
+    # Classification accuracy is the number of correctly classified
+    # images divided by the total number of images in the test-set.
+    acc = float(correct_sum) / len(correct)
+
+    return acc, correct_sum
+
+def validation_accuracy():
+    # Get the array of booleans whether the classifications are correct
+    # for the validation-set.
+    # The function returns two values but we only need the first.
+    correct, _ = predict_cls_validation()
+    
+    # Calculate the classification accuracy and return it.
+    return cls_accuracy(correct)
 
 
 session = tf.Session()
 session.run(tf.global_variables_initializer())
 
 def optimize():
+    global best_validation_accuracy
     for j in range(len(maps_global)) :
         maps = maps_global[j]
         decisions = decisions_global[j]
@@ -217,6 +298,8 @@ def optimize():
                 feed_dict_train = {input_layer_terre: tab_float,
                                y_true: decision_tab}
                 session.run(optimizer_terre, feed_dict=feed_dict_train)
+               # acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
+
             if decision_piece_type == FLIGHT :
                 decision_tab = np.zeros((1,7))
                 decision_tab[0][decision] = 1
@@ -224,6 +307,8 @@ def optimize():
                 feed_dict_train = {input_layer_flight: tab_float,
                                y_true: decision_tab}
                 session.run(optimizer_flight, feed_dict=feed_dict_train)
+               # acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
+
             if decision_piece_type == BOAT :
                 decision_tab = np.zeros((1,7)) 
                 decision_tab[0][decision] = 1
@@ -231,6 +316,8 @@ def optimize():
                 feed_dict_train = {input_layer_boat : tab_float,
                                y_true: decision_tab}
                 session.run(optimizer_boat, feed_dict=feed_dict_train)
+              #  acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
+
             if decision_piece_type == CITY :
                 decision_tab = np.zeros((1,7)) 
                 decision_tab[0][decision] = 1
@@ -238,6 +325,15 @@ def optimize():
                 feed_dict_train = {input_layer_city : tab_float,
                                y_true: decision_tab}
                 session.run(optimizer_city, feed_dict=feed_dict_train)
+              #  acc_train = session.run(accuracy_city, feed_dict=feed_dict_train)
+            acc_validation, _ = validation_accuracy()
+            if acc_validation > best_validation_accuracy:
+                # Update the best-known validation accuracy.
+                best_validation_accuracy = acc_validation
+                # Save all variables of the TensorFlow graph to file.
+                saver.save(sess=session, save_path=save_path)
+
+
 
 optimize()
 
