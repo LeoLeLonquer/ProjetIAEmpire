@@ -9,13 +9,16 @@ Created on Thu May 11 10:48:31 2017
 import tensorflow as tf
 import numpy as np
 from result import maps,decisions_piece_type,decisions
-
+from result1 import maps1,decisions_piece_type1,decisions1
+from result2 import maps2, decisions_piece_type2, decisions2
+from result3 import maps3,decisions_piece_type3,decisions3
+#from result4 import maps4,decisions_piece_type4,decisions4
 
 possible_actions = 7
 #DEF type unite
 #TODO : A CHANGER CECI EST POUR UN TRAIN DE TEST A CHANGER PAR LES VRAIES VALEURS
 ARMY = 0
-FLIGHT = 2
+FLIGHT = 1
 BOAT = 3
 CITY = -1
 
@@ -23,7 +26,9 @@ CITY = -1
 y_true = tf.placeholder(tf.float32, [None, possible_actions])
 y_true_cls = tf.placeholder(tf.int64, [None])
 
-
+maps_global = [maps,maps1,maps2,maps3]
+decisions_global =[decisions,decisions1,decisions2,decisions3]
+decisions_piece_type_global = [decisions_piece_type,decisions_piece_type1,decisions_piece_type2,decisions_piece_type3]
 
         
 first_size = 37
@@ -190,46 +195,49 @@ session = tf.Session()
 session.run(tf.global_variables_initializer())
 
 def optimize():
-    for i in range(len(maps)):
-        mape = maps[i]
-        #tab_mape = list(mape)
-        tab_mape = mape.split()
-        print (tab_mape)
- 
-        chaine ="cecidevraitmarcher"
-        tab_float = np.zeros(shape = (1, len(tab_mape)))
-        for j in range(len(chaine)):
-            tab_float[0][j] = ord(tab_mape[j])
-        decision = decisions[i]
-        decision_piece_type = decisions_piece_type[i]
-        if decision_piece_type == ARMY :
-            decision_tab = np.zeros((1,7))  
-            decision_tab[0][decision] = 1
-            print (decision_tab)
-            feed_dict_train = {input_layer_terre: tab_float,
-                           y_true: decision_tab}
-            session.run(optimizer_terre, feed_dict=feed_dict_train)
-        if decision_piece_type == FLIGHT :
-            decision_tab = np.zeros((1,7))
-            decision_tab[0][decision] = 1
-            print (decision_tab)
-            feed_dict_train = {input_layer_flight: tab_float,
-                           y_true: decision_tab}
-            session.run(optimizer_flight, feed_dict=feed_dict_train)
-        if decision_piece_type == BOAT :
-            decision_tab = np.zeros((1,7)) 
-            decision_tab[0][decision] = 1
-            print (decision_tab)
-            feed_dict_train = {input_layer_boat : tab_float,
-                           y_true: decision_tab}
-            session.run(optimizer_boat, feed_dict=feed_dict_train)
-        if decision_piece_type == CITY :
-            decision_tab = np.zeros((1,7)) 
-            decision_tab[0][decision] = 1
-            print (decision_tab)
-            feed_dict_train = {input_layer_city : tab_float,
-                           y_true: decision_tab}
-            session.run(optimizer_city, feed_dict=feed_dict_train)
+    for j in range(len(maps_global)) :
+        maps = maps_global[j]
+        decisions = decisions_global[j]
+        decisions_piece_type = decisions_piece_type_global[j]
+        for i in range(len(maps)):
+            mape = maps[i]
+            #tab_mape = list(mape)
+            tab_mape = mape.split()
+            print (tab_mape)
+            tab_float = np.zeros(shape = (1, len(tab_mape)))
+            for j in range(len(tab_mape)):
+                tab_float[0][j] = ord(tab_mape[j])
+            print (tab_float)
+            decision = decisions[i]
+            decision_piece_type = decisions_piece_type[i]
+            if decision_piece_type == ARMY :
+                decision_tab = np.zeros((1,7))  
+                decision_tab[0][decision] = 1
+                print (decision_tab)
+                feed_dict_train = {input_layer_terre: tab_float,
+                               y_true: decision_tab}
+                session.run(optimizer_terre, feed_dict=feed_dict_train)
+            if decision_piece_type == FLIGHT :
+                decision_tab = np.zeros((1,7))
+                decision_tab[0][decision] = 1
+                print (decision_tab)
+                feed_dict_train = {input_layer_flight: tab_float,
+                               y_true: decision_tab}
+                session.run(optimizer_flight, feed_dict=feed_dict_train)
+            if decision_piece_type == BOAT :
+                decision_tab = np.zeros((1,7)) 
+                decision_tab[0][decision] = 1
+                print (decision_tab)
+                feed_dict_train = {input_layer_boat : tab_float,
+                               y_true: decision_tab}
+                session.run(optimizer_boat, feed_dict=feed_dict_train)
+            if decision_piece_type == CITY :
+                decision_tab = np.zeros((1,7)) 
+                decision_tab[0][decision] = 1
+                print (decision_tab)
+                feed_dict_train = {input_layer_city : tab_float,
+                               y_true: decision_tab}
+                session.run(optimizer_city, feed_dict=feed_dict_train)
 
 optimize()
 
