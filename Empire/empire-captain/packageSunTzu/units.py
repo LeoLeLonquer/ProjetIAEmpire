@@ -43,7 +43,7 @@ class Pieceslist:
 
     def remove(self,pieceid):
         if (pieceid in self.piecesdico.keys()):
-            del self.pieceid[pieceid]
+            del self.piecesdico[pieceid]
 
 
 class Piecetype:
@@ -85,8 +85,7 @@ class Piecestypeslist:
         return self.nbpiecetype
 
     def get_piecetype(self,piecetypeid):
-        if (piecetypeid in self.piecestypesdico.key()):
-            return self.piecetypedico[piecetypeid]
+        if (piecetypeid in self.piecestypesdico.keys()):
+            return self.piecestypesdico[piecetypeid]
         else :
             return None
-

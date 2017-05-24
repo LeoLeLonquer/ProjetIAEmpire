@@ -1,13 +1,13 @@
 import sys
 
-#output = "txt"
-output = "py"
+output = "txt"
+#output = "py"
 
 nb_piece_type = 10 # TODO: modifier automatiquement!
 width = 44	 # TODO: modifier automatiquement!
 height = 24	# TODO: modifier automatiquement!
 half_size = 3
-filename = "short"
+filename = "out_S"
 
 maps = [ {} , {} ]
 

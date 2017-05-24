@@ -3,6 +3,7 @@
 import os
 import socket
 import sys
+import random
 
 from packageSunTzu import communication
 from packageSunTzu import parser
@@ -12,8 +13,11 @@ from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
 
-def ASK_SUNTZU(): #TODO ATTENTION A CE TURC QUI TRAINE
-	return 1
+def ASK_SUNTZU(str,minimap): #TODO ATTENTION A CE TURC QUI TRAINE
+	if str=="city":
+		return 0
+	else :
+		return random.randint(0,5)
 
 
 do_debug = False
@@ -41,7 +45,7 @@ the_map=game_map.Map()
 the_cities=cities.Citieslist()
 the_units=units.Pieceslist()
 the_types_of_units=units.Piecestypeslist()
-the_parser = parser.Parser(the_game_status,the_map,the_units)
+the_parser = parser.Parser(the_game_status,the_map,the_cities,the_units,the_types_of_units)
 the_communication = communication.Communication(the_parser, server, server_fd)
 
 turn = 0
@@ -53,29 +57,38 @@ while 1:
 	if do_debug: the_communication.action("dump_map")
 
 	# 1. Process cities.
-	for city in the_cities.get_cities():
-		if city.production is not None:	# si la ville produit déjà quelque chose
+	for cityid in the_cities.get_cities().keys():
+		city=the_cities.get_city(cityid)
+		if city is None :
+			continue
+		if city.get_production() is not None:	# si la ville produit déjà quelque chose
 			continue # on fait un break et on ne choisit pas
 
 		(x,y)=city.get_pos()
 		minimap=the_map.get_centered_map(x,y)
-		cityproduction=ASK_SUNTZU(minimap)
+		cityproduction=ASK_SUNTZU("city",minimap)
 		city.set_production(cityproduction)
 		city_id=city.get_cityid()
 		the_communication.action("set_city_production %d %d" % (city_id, city.production))
 
 	# 2. Process pieces.
-	for piece in the_units.get_pieces():
-		pieceid=piece.get_pieceid()
-		piecetype=piece.get_piecetype()
-		nbmove=the_types_of_units.get_move(piecetype)
+	for pieceid in the_units.get_pieces().keys():
+		piece=the_units.get_piece(pieceid)
+		if piece is None :
+			continue
+		piecetypeid=piece.get_piecetypeid()
+		nbmove=the_types_of_units.get_piecetype(piecetypeid).get_move()
 		while(nbmove!=0):
-			(x, y) = piece.get_pos()
-			minimap = the_map.get_centered_map(x,y)
-			piecemove=ASK_SUNTZU(minimap)
-			the_communication.action("move %d %d" % (pieceid,piecemove))
+			valid=-1
+			while (valid==-1):
+				(x, y) = piece.get_position()
+				minimap = the_map.get_centered_map(x,y)
+				piecemove=ASK_SUNTZU("piece",minimap)
+				valid=the_communication.action("move %d %d" % (pieceid,piecemove))
+				#	if valid==-1:
+						#supprimer la dernière possibilité d'action
+						# TODO, réduire le choix d'actions jusqu'à ce qu'il ny ait plus de possibités
 			nbmove=nbmove-1
 
 	# 3. End turn.
 	the_communication.end_turn()
-

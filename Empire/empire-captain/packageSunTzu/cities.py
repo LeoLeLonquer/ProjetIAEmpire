@@ -32,10 +32,14 @@ class Citieslist:
         self.citiesdico={}
 
     def get_cities(self):
-        self.citiesdico
+        return self.citiesdico
 
-    def add(self,city):
-        self.citiesdico[city.get_cityid()]=city
+    def get_city(self,cityid):
+        if cityid in self.citiesdico.keys():
+            return self.citiesdico[cityid]
+
+    def add(self,cityid,city):
+        self.citiesdico[cityid]=city
 
     def remove(self,cityid):
         if cityid in self.citiesdico.keys():
