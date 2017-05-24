@@ -1,0 +1,4 @@
+On va faire des hexagone de 19 cases !
+Il faut prendre en compte des hexagones "adjacents", deja traité sous forme d'une moyenne, a notre hexagone en traitement pour avoir une vision plus lointaine de notre carte. On aura juste a mettre a jour les hexagones concernés lors d'un changement. On va ainsi gagner en temps de calcul.
+ON calculera aussi un contexte plus lointain (6 autres hexagones faisant chacun la taille de notre hexagone en traitement + 6 hexagones adjacents)
+On calcul avant notre tour chaque "cas" possible afin de n'avoir qu'à piocher les bons hexagones pour diminuer le temps de calcul : il faut faire 19 cartes d'hexagones adjacents pour pouvoir coller à toutes les possibilités et 19*7 cartes d'hexagones distants
