@@ -178,6 +178,7 @@ class Parser:
 										  # mis à part si la pièce est dans une ville
 		piece_id = int(groups.group(1))
 		self.the_units.remove(piece_id)
+		print "delete_piece : %d" % piece_id
 
 
 	def parse_move(self, groups):
@@ -192,8 +193,8 @@ class Parser:
 
 	def parse_lose_city(self, groups):
 		city_id = int(groups.group(1))
-		location=self.the_cities.get_city(city_id).get_pos()
-		for pieceid in self.the_units.get_pieces():
+		location=self.the_cities.get_city(city_id).get_pos() # Pas sur d'en avoir besoin
+		for pieceid in self.the_units.get_pieces().keys(): # on supprime les unités contenues dans la ville
 			piece=self.the_units.get_piece(pieceid)
 			if location==piece.get_position():
 				self.the_units.remove(pieceid)
@@ -230,6 +231,7 @@ class Parser:
 			if groups:
 				self.proxy_handlers[i](groups)
 				return i
+		print message
 		return -1 # dans le cas où un message n'est pas handled
 				# TODO, mettre des cas différents en fonction du message
 		#self.the_situation.show()

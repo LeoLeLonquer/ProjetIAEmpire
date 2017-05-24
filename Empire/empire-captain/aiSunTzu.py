@@ -72,18 +72,20 @@ while 1:
 		the_communication.action("set_city_production %d %d" % (city_id, city.production))
 
 	# 2. Process pieces.
+	print the_units.get_pieces().keys()
 	for pieceid in the_units.get_pieces().keys():
 		piece=the_units.get_piece(pieceid)
-		if piece is None :
+		if piece is None : #cette condition montre que certaines pièces ne sont pas supprimées
 			continue
 		piecetypeid=piece.get_piecetypeid()
 		nbmove=the_types_of_units.get_piecetype(piecetypeid).get_move()
-		while(nbmove!=0):
+		while(nbmove!=0 and pieceid in the_units.get_pieces().keys()):
 			valid=-1
 			while (valid==-1):
 				(x, y) = piece.get_position()
 				minimap = the_map.get_centered_map(x,y)
 				piecemove=ASK_SUNTZU("piece",minimap)
+				print "move %d %d" % (pieceid,piecemove)
 				valid=the_communication.action("move %d %d" % (pieceid,piecemove))
 				#	if valid==-1:
 						#supprimer la dernière possibilité d'action
