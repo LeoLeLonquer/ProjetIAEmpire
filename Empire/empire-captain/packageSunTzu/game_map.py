@@ -3,7 +3,7 @@
 
 class Map:
 	def __init__(self):
-		self.map = []
+		self.map = {}
 		self.directions=[ (+1,  0),
 						  (+1, -1),
 						  ( 0, -1),

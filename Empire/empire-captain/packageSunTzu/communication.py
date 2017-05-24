@@ -28,9 +28,12 @@ class Communication:
 		response = self.server_fd.readline().strip()
 		debug("RESPONSE.1: %s" % response)
 		while response != "get_action":
-			self.parser.parse(response)
+			valid=self.parser.parse(response)
+			if valid==-1:
+				return -1
 			response = self.server_fd.readline().strip()
 			debug("RESPONSE.2: %s" % response)
+		return 0
 
 	def end_turn(self):
 		debug("END_TURN")

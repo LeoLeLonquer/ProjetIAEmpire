@@ -7,12 +7,13 @@ from cities import *
 from game_status import *
 
 class Parser:
-	def __init__(self, the_game_status,the_map,the_cities,the_units):
+	def __init__(self, the_game_status,the_map,the_cities,the_units,the_types_of_units):
 		self.the_map = the_map
 		self.the_game_status=the_game_status
 		self.the_map=the_map
 		self.the_cities=the_cities
 		self.the_units=the_units
+		self.the_types_of_units= the_types_of_units
 		self.re_transport_in_city = re.compile(r"transport in-city (\d+) (\d+)")
 
 		# The order matters: it must be the same of both rexes and handlers (see parse method).
@@ -98,7 +99,7 @@ class Parser:
 		(x,y) = int(groups.group(1)), int(groups.group(2))
 		piece_owner = int(groups.group(4))
 		piece_type_id = int(groups.group(6))
-		self.the_map.update_map(x,y,chr(ord('M') + piece_type_id + piece_owner * self.pieces_types_list.get_nbpiecetype()))
+		self.the_map.update_map(x,y,chr(ord('M') + piece_type_id + piece_owner * self.the_types_of_units.get_nbpiecetype()))
 
 	def parse_set_explored(self, groups):
 		(x,y) = int(groups.group(1)), int(groups.group(2))
@@ -140,7 +141,7 @@ class Parser:
 		self.the_game_status.set_player_id(int(groups.group(1)))
 
 	def parse_piece_types(self, groups): # ce type de message n'est jamais reçu à priori
-		raise Exception.parse_piece_types
+		pass
 		# piece_types = groups.group(1).split(";")
 		# piece_types = [x.split("#") for x in piece_types]
 		# result = {}
@@ -187,20 +188,21 @@ class Parser:
 	def parse_invade_city(self, groups):
 		city_id = int(groups.group(1))
 		(x,y) = int(groups.group(2)), int(groups.group(3))
-		self.the_cities.add(City(city_id, x,y))
+		self.the_cities.add(city_id,City(city_id, x,y))
 
 	def parse_lose_city(self, groups):
 		city_id = int(groups.group(1))
 		location=self.the_cities.get_city(city_id).get_pos()
-		for unit in self.the_units:
-			if location==unit.get_position():
-				self.the_units.remove(unit.get_pieceid())
+		for pieceid in self.the_units.get_pieces():
+			piece=self.the_units.get_piece(pieceid)
+			if location==piece.get_position():
+				self.the_units.remove(pieceid)
 
 		self.the_cities.remove(city_id)
 
 
 	def parse_winner(self, groups): # je pense qu'on ne passse jamais ici car méthode end de situation n'existe pas
-		if int(groups.group(1)) == self.game_status.get_playerid():
+		if int(groups.group(1)) == self.the_game_status.get_player_id():
 			print "Winner is you"
 		else:
 			print "Winner is the enemy"
@@ -227,6 +229,8 @@ class Parser:
 			groups = self.rexes[i].match(message)
 			if groups:
 				self.proxy_handlers[i](groups)
-				return
+				return i
+		return -1 # dans le cas où un message n'est pas handled
+				# TODO, mettre des cas différents en fonction du message
 		#self.the_situation.show()
-		raise Exception("error: not handled: " + message)
+		#raise Exception("error: not handled: " + message)
