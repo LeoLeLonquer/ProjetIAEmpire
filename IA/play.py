@@ -24,8 +24,10 @@ possible_actions = 7
 #TODO : A CHANGER CECI EST POUR UN TRAIN DE TEST A CHANGER PAR LES VRAIES VALEURS
 ARMY = 0
 FLIGHT = 1
-BOAT = 2
+BOAT = 4
 CITY = -1
+PATROL = 3
+TRANSPORT = 2
 
 #Info de Linear
 y_true = tf.placeholder(tf.float32, [None, possible_actions])
