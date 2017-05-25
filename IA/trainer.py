@@ -20,8 +20,10 @@ possible_actions = 7
 #TODO : A CHANGER CECI EST POUR UN TRAIN DE TEST A CHANGER PAR LES VRAIES VALEURS
 ARMY = 0
 FLIGHT = 1
-BOAT = 3
+BOAT = 4
 CITY = -1
+PATROL = 3
+TRANSPORT = 2
 
 #Info de Linear
 y_true = tf.placeholder(tf.float32, [None, possible_actions])
@@ -40,7 +42,6 @@ learning_rate = 0.001
 
 #Definition des reseaux des neurones pour unités terrestres
     
-	# network weights
 first_weights_terre = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_terrestre]))
 first_biases_terre = tf.Variable(tf.zeros([first_hidden_layers_size_terrestre]))
     
@@ -195,7 +196,18 @@ if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 save_path = os.path.join(save_dir, 'best_validation')
 
-
+def test_egalite(c1,c2):
+    if len(c1) != len(c2):
+        return False
+    for i in range(len(c1)) :
+        c3 = c1[i]
+        c4 = c2[i]
+        c5 = c4[0]
+        c6 = c3[0]
+        for j in range(len(c5)):
+            if (c5[j] != c6[j]):
+                return False
+    return True
 
 
 def predict_cls_validation():
@@ -205,13 +217,13 @@ def predict_cls_validation():
                        decisions_piece_type = decisions_piece_type4)
     
 def create_label_test(decisions):
-    labels_create = np.array(shape = (len(decisions),1))
+    labels_create = len(decisions)*[0]
     for i in range(len(decisions)):
         decision = decisions[i]
         decision_tab = np.zeros((1,7))  
         decision_tab[0][decision] = 1
         for j in range(len(decision_tab)):
-            labels_create[i][0] = decision_tab
+            labels_create[i] = decision_tab
     return labels_create
 
 
@@ -219,7 +231,7 @@ def predict_cls(maps, labels, decisions, decisions_piece_type):
     nb_maps = len(maps)
     decision_tab = create_label_test(decisions)
 
-    cls_pred = np.zeros(shape=(1,nb_maps))
+    cls_pred = nb_maps*[0]
     for i in range(nb_maps):
         decision_piece_type = decisions_piece_type[i]
         mape = maps[i]
@@ -230,45 +242,48 @@ def predict_cls(maps, labels, decisions, decisions_piece_type):
         if decision_piece_type == ARMY :
             feed_dict_train = {input_layer_terre: tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[0][i] = session.run(out_layer_terre, feed_dict=feed_dict_train)
+            cls_pred[i] = session.run(out_layer_terre, feed_dict=feed_dict_train)
         if decision_piece_type == FLIGHT :
             feed_dict_train = {input_layer_flight: tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[0][i] = session.run(out_layer_flight, feed_dict=feed_dict_train)
+            cls_pred[i] = session.run(out_layer_flight, feed_dict=feed_dict_train)
         if decision_piece_type == BOAT :
             feed_dict_train = {input_layer_boat : tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[0][i] = session.run(out_layer_boat, feed_dict=feed_dict_train)    
+            cls_pred[i] = session.run(out_layer_boat, feed_dict=feed_dict_train)    
         if decision_piece_type == CITY :
             feed_dict_train = {input_layer_city : tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[0][i] = session.run(out_layer_city, feed_dict=feed_dict_train)
+            cls_pred[i] = session.run(out_layer_city, feed_dict=feed_dict_train)
 
    
-    correct = (decisions == cls_pred)
+    correct = test_egalite(decision_tab,cls_pred)
 
     return correct, cls_pred
 
   
-def cls_accuracy(correct):
+def cls_accuracy(correct,maps):
     # Calculate the number of correctly classified images.
     # When summing a boolean array, False means 0 and True means 1.
-    correct_sum = correct.sum()
-
+    #correct_sum = correct.sum()
+    if (correct == True):
+        correct_sum =1
+    else:
+        correct_sum =0
     # Classification accuracy is the number of correctly classified
     # images divided by the total number of images in the test-set.
-    acc = float(correct_sum) / len(correct)
+    acc = float(correct_sum) / len(maps)
 
     return acc, correct_sum
 
-def validation_accuracy():
+def validation_accuracy(maps):
     # Get the array of booleans whether the classifications are correct
     # for the validation-set.
     # The function returns two values but we only need the first.
     correct, _ = predict_cls_validation()
     
     # Calculate the classification accuracy and return it.
-    return cls_accuracy(correct)
+    return cls_accuracy(correct,maps)
 
 
 session = tf.Session()
@@ -326,7 +341,7 @@ def optimize():
                                y_true: decision_tab}
                 session.run(optimizer_city, feed_dict=feed_dict_train)
               #  acc_train = session.run(accuracy_city, feed_dict=feed_dict_train)
-            acc_validation, _ = validation_accuracy()
+            acc_validation, _ = validation_accuracy(maps4)
             if acc_validation > best_validation_accuracy:
                 # Update the best-known validation accuracy.
                 best_validation_accuracy = acc_validation
