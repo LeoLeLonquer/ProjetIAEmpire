@@ -75,7 +75,7 @@ class Piecestypeslist:
                                3:Piecetype(3,"PATROL",'P',4),
                                4:Piecetype(4,"BATTLESHIP",'B',2)
                                }
-        self.nbpiecetype=10 #TODO à modifier automatiquement
+        self.nbpiecetype=10 #TODO a modifier automatiquement
 
 
     def get_piecestypesdico(self):
