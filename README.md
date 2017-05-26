@@ -1,6 +1,6 @@
 # ProjetIAEmpire
 
-> Etre victorieux dans tous les combats n’est pas le fin du fin ; soumettre l’ennemi sans croiser le fer, voilà le fin du fin.
+> C'est lorsqu'on est environné de tous les dangers qu'il n'en faut redouter aucun.
 
 Sun Tzu, 孫子 :dragon_face:
 
@@ -69,7 +69,7 @@ Il faut faire une deuxième interface qui envoie les messages au jeu
 
 ## Autres infos
 
-* Messages affichés sur le terminal client : 
+* Messages affichés sur le terminal client :
     Message not handled veut rien dire
     create_piece : pièce créée
 

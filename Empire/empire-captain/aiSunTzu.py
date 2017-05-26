@@ -12,7 +12,7 @@ from packageSunTzu import game_map
 from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
-from packageSunTzu.SunTzu import premierCodeReseau as SunTzu
+from packageSunTzu.SunTzu import play as SunTzu
 
 def ASK_SUNTZU(typeid,minimap): #TODO ATTENTION A CE TURC QUI TRAINE
 	return SunTzu.jouer(minimap,typeid)

@@ -7,7 +7,7 @@ nb_piece_type = 10 # TODO: modifier automatiquement!
 width = 44	 # TODO: modifier automatiquement!
 height = 24	# TODO: modifier automatiquement!
 half_size = 3
-filename = "out_S"
+filename = "partie_1"
 
 maps = [ {} , {} ]
 
