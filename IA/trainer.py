@@ -38,36 +38,37 @@ first_size = 37
 possible_actions = 7
 first_hidden_layers_size_terrestre = 48
 snd_hidden_layers_size_terrestre = 48
-learning_rate = 0.001
+learning_rate = 0.45
 
 #Definition des reseaux des neurones pour unités terrestres
+#first_weights_terre = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_terrestre]))
+#first_biases_terre = tf.Variable(tf.zeros([first_hidden_layers_size_terrestre]))
+first_weights_terre = (tf.Variable(tf.truncated_normal([first_size,first_hidden_layers_size_terrestre], stddev=5.0)))
+first_biases_terre = tf.abs(tf.Variable(tf.truncated_normal([first_hidden_layers_size_terrestre],stddev=5.0)))
     
-first_weights_terre = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_terrestre]))
-first_biases_terre = tf.Variable(tf.zeros([first_hidden_layers_size_terrestre]))
-    
-snd_weights_terre = tf.Variable(tf.zeros([first_hidden_layers_size_terrestre, snd_hidden_layers_size_terrestre]))
-snd_biases_terre = tf.Variable(tf.zeros([snd_hidden_layers_size_terrestre]))
-    
-last_weights_terre = tf.Variable(tf.zeros([snd_hidden_layers_size_terrestre, possible_actions]))
-last_biases_terre = tf.Variable(tf.zeros([possible_actions]))
-    
+#snd_weights_terre = tf.Variable(tf.zeros([first_hidden_layers_size_terrestre, snd_hidden_layers_size_terrestre]))
+#snd_biases_terre = tf.Variable(tf.zeros([snd_hidden_layers_size_terrestre]))
+snd_weights_terre = (tf.Variable(tf.truncated_normal([first_hidden_layers_size_terrestre,snd_hidden_layers_size_terrestre], stddev=5.0)))
+snd_biases_terre = tf.abs(tf.Variable(tf.truncated_normal([snd_hidden_layers_size_terrestre], stddev=5.0)))
+   
+#last_weights_terre = tf.Variable(tf.zeros([snd_hidden_layers_size_terrestre, possible_actions]))
+#last_biases_terre = tf.Variable(tf.zeros([possible_actions]))
+last_weights_terre = (tf.Variable(tf.truncated_normal([snd_hidden_layers_size_terrestre,possible_actions], stddev=5.0)))
+last_biases_terre = tf.abs(tf.Variable(tf.truncated_normal([possible_actions], stddev=5.0)))  
 	# input layer
 input_layer_terre = tf.placeholder(tf.float32, [None, first_size])#Prends en entrée une "carte" hexagonale 37 donc comporte 37 neurones
     
 	# hidden layers
 first_layer_terre = tf.nn.relu(tf.matmul(input_layer_terre, first_weights_terre) + first_biases_terre) # sors [1;50] donc une val par neurones (50 neurones)
-snd_layer_terre = tf.nn.relu(tf.matmul(first_layer_terre, snd_weights_terre) + snd_biases_terre) #Prend une [1;50] et sors une [1;7]
-    
+snd_layer_terre = tf.nn.relu(tf.matmul(first_layer_terre, snd_weights_terre) + snd_biases_terre) #Prend une [1;50] et sors une [1;7]    
     #out layers On n'a qu'un seul neurones de sorties
 logits_terre = tf.matmul(snd_layer_terre, last_weights_terre) + last_biases_terre #matrice de poids non remis entre 0 et 1 IL faut une logits[1;7]
 out_layer_terre = tf.nn.softmax(logits_terre) #Matrice avec les probabilités entre 0 et 1 dont la somme vaut 1
-out_decision_terre = tf.argmax(out_layer_terre, dimension=1) #Choix final de mouvement 
-    
+out_decision_terre = tf.argmax(out_layer_terre, dimension=1) #Choix final de mouvement     
     #PARTIE DE TRAIN IMPORTANTE
 cross_entropy_terre = tf.nn.softmax_cross_entropy_with_logits(logits = logits_terre,
                                                         labels=y_true)
 cost_terre = tf.reduce_mean(cross_entropy_terre)
-
 optimizer_terre = tf.train.AdagradOptimizer(learning_rate).minimize(cost_terre)
 correct_prediction_terre = tf.equal(out_decision_terre, y_true_cls)
 accuracy_terre = tf.reduce_mean(tf.cast(correct_prediction_terre, tf.float32))
@@ -78,14 +79,14 @@ first_hidden_layers_size_flight = 42
 snd_hidden_layers_size_flight = 42  
 #Definition des reseaux des neurones pour unités Volantes
 	# network weights
-first_weights_flight = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_flight]))
-first_biases_flight = tf.Variable(tf.zeros([first_hidden_layers_size_flight]))
+first_weights_flight = (tf.Variable(tf.truncated_normal([first_size, first_hidden_layers_size_flight], stddev=5.0)))
+first_biases_flight = tf.abs(tf.Variable(tf.truncated_normal([first_hidden_layers_size_flight], stddev=5.0)))
     
-snd_weights_flight = tf.Variable(tf.zeros([first_hidden_layers_size_flight, snd_hidden_layers_size_flight]))
-snd_biases_flight = tf.Variable(tf.zeros([snd_hidden_layers_size_flight]))
+snd_weights_flight = (tf.Variable(tf.truncated_normal([first_hidden_layers_size_flight, snd_hidden_layers_size_flight], stddev=5.0)))
+snd_biases_flight = tf.abs(tf.Variable(tf.truncated_normal([snd_hidden_layers_size_flight], stddev=5.0)))
     
-last_weights_flight = tf.Variable(tf.zeros([snd_hidden_layers_size_flight, possible_actions]))
-last_biases_flight = tf.Variable(tf.zeros([possible_actions]))
+last_weights_flight = (tf.Variable(tf.truncated_normal([snd_hidden_layers_size_flight, possible_actions], stddev=5.0)))
+last_biases_flight = tf.abs(tf.Variable(tf.truncated_normal([possible_actions], stddev=5.0)))
     
 	# input layer
 input_layer_flight = tf.placeholder(tf.float32, [None, first_size]) #Prends en entrée une "carte" hexagonale 37 donc comporte 37 neurones
@@ -115,14 +116,14 @@ snd_hidden_layers_size_boat = 30
 #Definition des reseaux des neurones pour unités aquatiques
 
 	# network weights
-first_weights_boat = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_boat]))
-first_biases_boat = tf.Variable(tf.zeros([first_hidden_layers_size_boat]))
+first_weights_boat = (tf.Variable(tf.truncated_normal([first_size, first_hidden_layers_size_boat], stddev=5.0)))
+first_biases_boat = tf.abs(tf.Variable(tf.truncated_normal([first_hidden_layers_size_boat], stddev=1.0)))
         
-snd_weights_boat = tf.Variable(tf.zeros([first_hidden_layers_size_boat, snd_hidden_layers_size_boat]))
-snd_biases_boat = tf.Variable(tf.zeros([snd_hidden_layers_size_boat]))
+snd_weights_boat = (tf.Variable(tf.truncated_normal([first_hidden_layers_size_boat, snd_hidden_layers_size_boat], stddev=5.0)))
+snd_biases_boat = tf.abs(tf.Variable(tf.truncated_normal([snd_hidden_layers_size_boat], stddev=5.0)))
         
-last_weights_boat = tf.Variable(tf.zeros([snd_hidden_layers_size_boat, possible_actions]))
-last_biases_boat = tf.Variable(tf.zeros([possible_actions]))
+last_weights_boat = (tf.Variable(tf.truncated_normal([snd_hidden_layers_size_boat, possible_actions], stddev=5.0)))
+last_biases_boat = tf.abs(tf.Variable(tf.truncated_normal([possible_actions], stddev=5.0)))
         
 	# input layer
 input_layer_boat = tf.placeholder(tf.float32, [None, first_size]) #Prends en entrée une "carte" hexagonale 37 donc comporte 37 neurones
@@ -152,19 +153,18 @@ first_size = 37
 possible_actions = 7
 first_hidden_layers_size_city = 48 #TODO : A remplacer par le bon nombre de pocibilité
 snd_hidden_layers_size_city = 48
-learning_rate = 0.001
 
 #Definition des reseaux des neurones pour unités terrestres
     
 	# network weights
-first_weights_city = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_city]))
-first_biases_city= tf.Variable(tf.zeros([first_hidden_layers_size_city]))
+first_weights_city = (tf.Variable(tf.truncated_normal([first_size, first_hidden_layers_size_city], stddev=5.0)))
+first_biases_city= tf.abs(tf.Variable(tf.truncated_normal([first_hidden_layers_size_city], stddev=5.0)))
     
-snd_weights_city= tf.Variable(tf.zeros([first_hidden_layers_size_city, snd_hidden_layers_size_city]))
-snd_biases_city= tf.Variable(tf.zeros([snd_hidden_layers_size_city]))
+snd_weights_city= (tf.Variable(tf.truncated_normal([first_hidden_layers_size_city, snd_hidden_layers_size_city], stddev=5.0)))
+snd_biases_city= tf.abs(tf.Variable(tf.truncated_normal([snd_hidden_layers_size_city], stddev=5.0)))
     
-last_weights_city= tf.Variable(tf.zeros([snd_hidden_layers_size_city, possible_actions]))
-last_biases_city= tf.Variable(tf.zeros([possible_actions]))
+last_weights_city= (tf.Variable(tf.truncated_normal([snd_hidden_layers_size_city, possible_actions], stddev=5.0)))
+last_biases_city= tf.abs(tf.Variable(tf.truncated_normal([possible_actions], stddev=5.0)))
     
 	# input layer
 input_layer_city= tf.placeholder(tf.float32, [None, first_size])#Prends en entrée une "carte" hexagonale 37 donc comporte 37 neurones
@@ -197,17 +197,20 @@ if not os.path.exists(save_dir):
 save_path = os.path.join(save_dir, 'best_validation')
 
 def test_egalite(c1,c2):
-    if len(c1) != len(c2):
-        return False
+    c7 = len(c1) *[0]
     for i in range(len(c1)) :
         c3 = c1[i]
         c4 = c2[i]
-        c5 = c4[0]
-        c6 = c3[0]
-        for j in range(len(c5)):
-            if (c5[j] != c6[j]):
-                return False
-    return True
+        preci1 = np.argmax(c3)
+        preci2 = np.argmax(c4)
+#        print(preci1)
+#        print (preci2)
+#        print("-----------------------------------------------------------------")
+#        
+        if preci1 == preci2 :
+            c7[i] =1
+
+    return c7
 
 
 def predict_cls_validation():
@@ -255,26 +258,20 @@ def predict_cls(maps, labels, decisions, decisions_piece_type):
             feed_dict_train = {input_layer_city : tab_float,
                                    y_true: decision_tab[i]}
             cls_pred[i] = session.run(out_layer_city, feed_dict=feed_dict_train)
-
-   
     correct = test_egalite(decision_tab,cls_pred)
+
 
     return correct, cls_pred
 
   
 def cls_accuracy(correct,maps):
-    # Calculate the number of correctly classified images.
-    # When summing a boolean array, False means 0 and True means 1.
-    #correct_sum = correct.sum()
-    if (correct == True):
-        correct_sum =1
-    else:
-        correct_sum =0
-    # Classification accuracy is the number of correctly classified
-    # images divided by the total number of images in the test-set.
-    acc = float(correct_sum) / len(maps)
+ 
+    somme = 0
+    for i in range (len(correct)) :
+        somme = somme + correct[i]
 
-    return acc, correct_sum
+    acc = float(somme) / len(maps)
+    return acc, somme
 
 def validation_accuracy(maps):
     # Get the array of booleans whether the classifications are correct
@@ -291,65 +288,73 @@ session.run(tf.global_variables_initializer())
 
 def optimize():
     global best_validation_accuracy
-    for j in range(len(maps_global)) :
-        maps = maps_global[j]
-        decisions = decisions_global[j]
-        decisions_piece_type = decisions_piece_type_global[j]
-        for i in range(len(maps)):
-            mape = maps[i]
-            #tab_mape = list(mape)
-            tab_mape = mape.split()
-            print (tab_mape)
-            tab_float = np.zeros(shape = (1, len(tab_mape)))
-            for j in range(len(tab_mape)):
-                tab_float[0][j] = ord(tab_mape[j])
-            print (tab_float)
-            decision = decisions[i]
-            decision_piece_type = decisions_piece_type[i]
-            if decision_piece_type == ARMY :
-                decision_tab = np.zeros((1,7))  
-                decision_tab[0][decision] = 1
-                print (decision_tab)
-                feed_dict_train = {input_layer_terre: tab_float,
-                               y_true: decision_tab}
-                session.run(optimizer_terre, feed_dict=feed_dict_train)
-               # acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
-
-            if decision_piece_type == FLIGHT :
-                decision_tab = np.zeros((1,7))
-                decision_tab[0][decision] = 1
-                print (decision_tab)
-                feed_dict_train = {input_layer_flight: tab_float,
-                               y_true: decision_tab}
-                session.run(optimizer_flight, feed_dict=feed_dict_train)
-               # acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
-
-            if decision_piece_type == BOAT :
-                decision_tab = np.zeros((1,7)) 
-                decision_tab[0][decision] = 1
-                print (decision_tab)
-                feed_dict_train = {input_layer_boat : tab_float,
-                               y_true: decision_tab}
-                session.run(optimizer_boat, feed_dict=feed_dict_train)
-              #  acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
-
-            if decision_piece_type == CITY :
-                decision_tab = np.zeros((1,7)) 
-                decision_tab[0][decision] = 1
-                print (decision_tab)
-                feed_dict_train = {input_layer_city : tab_float,
-                               y_true: decision_tab}
-                session.run(optimizer_city, feed_dict=feed_dict_train)
-              #  acc_train = session.run(accuracy_city, feed_dict=feed_dict_train)
+    for w in range(100):
+        j = 0
+        for j in range(len(maps_global)) :
+            i = 0
+    #        print (session.run(first_weights_terre))
+            maps = maps_global[j]
+            decisions = decisions_global[j]
+            decisions_piece_type = decisions_piece_type_global[j]
+            for i in range(len(maps)):
+                #print ("Je train le coup %d" %i)
+                mape = maps[i]
+                #tab_mape = list(mape)
+                tab_mape = mape.split()
+               # print (tab_mape)
+                tab_float = np.zeros(shape = (1, len(tab_mape)))
+                for j in range(len(tab_mape)):
+                    tab_float[0][j] = ord(tab_mape[j])
+               # print (tab_float)
+                decision = decisions[i]
+                decision_piece_type = decisions_piece_type[i]
+                if decision_piece_type == ARMY :
+                    decision_tab = np.zeros((1,7))  
+                    decision_tab[0][decision] = 1
+                   # print (decision_tab)
+                    feed_dict_train = {input_layer_terre: tab_float,
+                                   y_true: decision_tab}
+                    session.run(optimizer_terre, feed_dict=feed_dict_train)
+                   # acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
+    
+                if decision_piece_type == FLIGHT :
+                    decision_tab = np.zeros((1,7))
+                    decision_tab[0][decision] = 1
+                   # print (decision_tab)
+                    feed_dict_train = {input_layer_flight: tab_float,
+                                   y_true: decision_tab}
+                    session.run(optimizer_flight, feed_dict=feed_dict_train)
+                   # acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
+    
+                if decision_piece_type == BOAT :
+                    decision_tab = np.zeros((1,7)) 
+                    decision_tab[0][decision] = 1
+                 #   print (decision_tab)
+                    feed_dict_train = {input_layer_boat : tab_float,
+                                   y_true: decision_tab}
+                    session.run(optimizer_boat, feed_dict=feed_dict_train)
+                  #  acc_train = session.run(accuracy_terre, feed_dict=feed_dict_train)
+    
+                if decision_piece_type == CITY :
+                    decision_tab = np.zeros((1,7)) 
+                    decision_tab[0][decision] = 1
+                #    print (decision_tab)
+                    feed_dict_train = {input_layer_city : tab_float,
+                                   y_true: decision_tab}
+                    session.run(optimizer_city, feed_dict=feed_dict_train)
+                  #  acc_train = session.run(accuracy_city, feed_dict=feed_dict_train)
             acc_validation, _ = validation_accuracy(maps4)
+          #  print (acc_validation)
             if acc_validation > best_validation_accuracy:
+                # print (best_validation_accuracy)
                 # Update the best-known validation accuracy.
                 best_validation_accuracy = acc_validation
+                print (best_validation_accuracy)
                 # Save all variables of the TensorFlow graph to file.
                 saver.save(sess=session, save_path=save_path)
-
+                #print ("j'ai sauvegarde !!! %d"% best_validation_accuracy)
+    
 
 
 optimize()
-
 #TODO : FAIRE LIMPLEMENTATION DU SAVE ET DU RESEAU DE NEURONES DES VILLES
