@@ -1,6 +1,3 @@
-
-
-
 class Map:
 	def __init__(self):
 		self.map = {}
@@ -81,3 +78,31 @@ class Map:
 				else:
 					print "?",
 			print ""
+
+
+	def rotate(l, n):
+	    newl= [-e for e in l]
+	    return newl[-n:] + newl[:-n]
+
+	def mirror_centers(center, radius):
+	    x,y=center
+	    list_centers=[]
+	    mirror_center=[2*radius+1, -radius, -radius-1]
+	    offset_mirror_center= [x+mirror_center[0],y+mirror_center[1]]
+	    list_centers.append(offset_mirror_center)
+	    for i in range(5):
+	        mirror_center=rotate(mirror_center,1)
+	        offset_mirror_center= [x+mirror_center[0],y+mirror_center[1]]
+	        list_centers.append(offset_mirror_center)
+	    return list_centers
+
+
+	def interest(minimap):
+		blood_to_spill=0
+		for symb in minimap :
+			if symb in ennemy_units:
+				if symb == 'D' :
+					blood_to_spill=blood_to_spill+10
+				else :
+					blood_to_spill=blood_to_spill+1
+		return blood_to_spill
