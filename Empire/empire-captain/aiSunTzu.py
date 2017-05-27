@@ -12,12 +12,13 @@ from packageSunTzu import game_map
 from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
+from packageSunTzu.SunTzu import play as SunTzu
 
-def ASK_SUNTZU(str,minimap): #TODO ATTENTION A CE TURC QUI TRAINE
-	if str=="city":
-		return 0
-	else :
-		return random.randint(0,5)
+def ASK_SUNTZU(typeid,minimap): #TODO ATTENTION A CE TURC QUI TRAINE
+	return SunTzu.jouer(minimap,typeid)
+
+def ASK_NATHAN():
+	return randint(0,5)
 
 
 do_debug = False
@@ -66,26 +67,32 @@ while 1:
 
 		(x,y)=city.get_pos()
 		minimap=the_map.get_centered_map(x,y)
-		cityproduction=ASK_SUNTZU("city",minimap)
+		cityproduction=0#ASK_SUNTZU(-1,minimap)
 		city.set_production(cityproduction)
 		city_id=city.get_cityid()
 		the_communication.action("set_city_production %d %d" % (city_id, city.production))
 
 	# 2. Process pieces.
+	print the_units.get_pieces().keys()
 	for pieceid in the_units.get_pieces().keys():
 		piece=the_units.get_piece(pieceid)
-		if piece is None :
+		if piece is None : #cette condition montre que certaines pièces ne sont pas supprimées
 			continue
 		piecetypeid=piece.get_piecetypeid()
 		nbmove=the_types_of_units.get_piecetype(piecetypeid).get_move()
-		while(nbmove!=0):
+		while(nbmove!=0 and pieceid in the_units.get_pieces().keys()):
 			valid=-1
-			while (valid==-1):
-				(x, y) = piece.get_position()
-				minimap = the_map.get_centered_map(x,y)
-				piecemove=ASK_SUNTZU("piece",minimap)
-				valid=the_communication.action("move %d %d" % (pieceid,piecemove))
-				#	if valid==-1:
+			# while (valid==-1 ):
+			(x, y) = piece.get_position()
+			minimap = the_map.get_centered_map(x,y)
+			print minimap
+			piecemove=ASK_SUNTZU(piecetypeid,minimap)
+			print "move %d %d" % (pieceid,piecemove)
+			valid=the_communication.action("move %d %d" % (pieceid,piecemove))
+				# if valid==-1:
+				# 	piecemove=ASK_NATHAN()
+				# 	print "move %d %d" % (pieceid,piecemove)
+				# 	valid=the_communication.action("move %d %d" % (pieceid,piecemove))
 						#supprimer la dernière possibilité d'action
 						# TODO, réduire le choix d'actions jusqu'à ce qu'il ny ait plus de possibités
 			nbmove=nbmove-1

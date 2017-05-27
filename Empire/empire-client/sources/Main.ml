@@ -6,7 +6,6 @@ open Empire ;;
 open Misc ;;
 open Stub ;;
 open Tilemap ;;
-open FileWriter;;
 
 let create_tile_to_pair () =
   let tile_to_pair = Hashtbl.create 16 in
@@ -248,7 +247,7 @@ let handle_action_set_city_production game =
           | Some choice ->
               let piece_type_id =
                 fst (List.nth piece_types_names choice) in
-              set_city_production game.connection city_id piece_type_id
+              set_city_production game.connection city_id piece_type_id 
     end else
       add_error_message game.console "not your turn" ;;
 
@@ -351,12 +350,9 @@ let process_server_message game message =
   | "draw" -> handle_message_draw game
   | _ -> if not game.observer then add_error_message game.console ("message not handled: " ^ message) ;;
 
-
-
 let rec process_server_messages game =
   match read_server game.connection with
   | Some message ->
-    appendToFile ((Printf.sprintf "snd: %d <- %s" game.player_id message) ^ "\n") (Printf.sprintf "client%d_log.txt" game.player_id);
     process_server_message game message ;
     (* Le message qui vient juste d'etre traite peut correspondre a une
      * fin de partie. A ce moment, le serveur est clot et il ne faut plus lire
@@ -421,7 +417,7 @@ let thread_gui game =
     Thread.delay 1.0 ;
     if differed_reprint_save <> !differed_reprint then print_map game.map ;
     fun_gui () in
-  Thread.create fun_gui ();;
+  Thread.create fun_gui ()
 
 let main () =
   let server_port =
@@ -432,7 +428,6 @@ let main () =
     loop 0 in
   let window = setup_curses () in
   let game = configure window "localhost" server_port in
-  let ()=update_player_id game.player_id in
   let _ = thread_gui game in
   update_windows game ;
   print_map game.map ;

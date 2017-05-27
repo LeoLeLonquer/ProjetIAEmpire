@@ -70,12 +70,12 @@ class Piecetype:
 class Piecestypeslist:
     def __init__ (self):
         self.piecestypesdico= {0:Piecetype(0,"ARMY",'A',1),
-                               1:Piecetype(1,"FIGHT",'F',8),
+                               1:Piecetype(1,"FLIGHT",'F',8),
                                2:Piecetype(2,"TRANSPORT",'T',2),
                                3:Piecetype(3,"PATROL",'P',4),
                                4:Piecetype(4,"BATTLESHIP",'B',2)
                                }
-        self.nbpiecetype=10 #TODO à modifier automatiquement
+        self.nbpiecetype=10 #TODO a modifier automatiquement
 
 
     def get_piecestypesdico(self):

@@ -1,5 +1,4 @@
 open Unix ;;
-open FileWriter;;
 
 exception ConnectionError of string ;;
 
@@ -24,20 +23,7 @@ let wait_server_message connection =
   done ;
   !r ;;
 
-  let save file string =
-      let channel = open_out file in
-      output_string channel string;
-      close_out channel;;
-
-  let appendToFile str file =
-    	let oc =
-    	open_out_gen
-    	[Open_wronly; Open_creat; Open_append; Open_text] 0o666 file in
-    	output_string oc str;
-    	close_out oc;;
-
 let send_to_server connection message =
-  appendToFileWithPlayerId message "client_log.txt";
   let oc = Unix.out_channel_of_descr connection in
   output_string oc (message ^ "\n") ;
   flush oc ;;

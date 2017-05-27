@@ -70,6 +70,12 @@ class Parser:
 				, self.parse_city_units_limit
 				]
 
+	def kronecker_inv(x,y):
+		if x==y :
+			return 0
+		else :
+			return 1
+
 	def parse_set_visible_none(self, groups):
 		(x,y) = int(groups.group(1)), int(groups.group(2))
 		terrain =  groups.group(3)
@@ -82,11 +88,11 @@ class Parser:
 		(x,y) = int(groups.group(1)), int(groups.group(2))
 		city_id = int(groups.group(4))
 		city_owner = int(groups.group(5))
-		if self.the_game_status.get_player_id()==None : # La première ville découverte est celle du joueur
+		if self.the_game_status.get_player_id() is None : # La premiere ville decouverte est celle du joueur
 			self.the_game_status.set_player_id(city_owner)
 		if city_owner==self.the_game_status.get_player_id():
 			self.the_cities.add(city_id,City(city_id,x,y))
-		self.the_map.update_map(x,y,chr(ord('C') + city_owner))
+		self.the_map.update_map(x,y,chr(ord('C') + kronecker_inv(city_owner,the_game_status.get_player_id()))
 
 
 	def parse_set_visible_city(self, groups):
@@ -99,7 +105,7 @@ class Parser:
 		(x,y) = int(groups.group(1)), int(groups.group(2))
 		piece_owner = int(groups.group(4))
 		piece_type_id = int(groups.group(6))
-		self.the_map.update_map(x,y,chr(ord('M') + piece_type_id + piece_owner * self.the_types_of_units.get_nbpiecetype()))
+		self.the_map.update_map(x,y, chr(ord('M') +piece_type_id + self.the_types_of_units.get_nbpiecetype()*kronecker_inv(piece_owner,the_game_status.get_player_id()) ))
 
 	def parse_set_explored(self, groups):
 		(x,y) = int(groups.group(1)), int(groups.group(2))
@@ -116,7 +122,7 @@ class Parser:
 		self.the_map.set_height(int(groups.group(1)))
 
 
-		#le programme split ignore les messages dans ces cas là :
+		#le programme split ignore les messages dans ces cas la :
 		# if fields[0] in ["city-units-limit", "created-units-limit", "create_piece", \
 		# 		 "delete_piece", "enter_city", "get_action", "ko-invasion", \
 		# 		 "leave_city", "leave_terrain", "lose_city", "ok-invasion", \
@@ -140,7 +146,7 @@ class Parser:
 	def parse_player_id(self, groups):
 		self.the_game_status.set_player_id(int(groups.group(1)))
 
-	def parse_piece_types(self, groups): # ce type de message n'est jamais reçu à priori
+	def parse_piece_types(self, groups): # ce type de message n'est jamais recu a priori
 		pass
 		# piece_types = groups.group(1).split(";")
 		# piece_types = [x.split("#") for x in piece_types]
@@ -174,10 +180,11 @@ class Parser:
 		self.the_units.add(piece_id,Piece(piece_id,piece_type_id,x,y))
 
 
-	def parse_delete_piece(self, groups): # pas besoin de mettre à jour la map delete_piece est suivi de set_visible
-										  # mis à part si la pièce est dans une ville
+	def parse_delete_piece(self, groups): # pas besoin de mettre a jour la map delete_piece est suivi de set_visible
+										  # mis a part si la piece est dans une ville
 		piece_id = int(groups.group(1))
 		self.the_units.remove(piece_id)
+		print "delete_piece : %d" % piece_id
 
 
 	def parse_move(self, groups):
@@ -192,8 +199,8 @@ class Parser:
 
 	def parse_lose_city(self, groups):
 		city_id = int(groups.group(1))
-		location=self.the_cities.get_city(city_id).get_pos()
-		for pieceid in self.the_units.get_pieces():
+		location=self.the_cities.get_city(city_id).get_pos() # Pas sur d'en avoir besoin
+		for pieceid in self.the_units.get_pieces().keys(): # on supprime les unites contenues dans la ville
 			piece=self.the_units.get_piece(pieceid)
 			if location==piece.get_position():
 				self.the_units.remove(pieceid)
@@ -201,7 +208,7 @@ class Parser:
 		self.the_cities.remove(city_id)
 
 
-	def parse_winner(self, groups): # je pense qu'on ne passse jamais ici car méthode end de situation n'existe pas
+	def parse_winner(self, groups): # je pense qu'on ne passse jamais ici car methode end de situation n'existe pas
 		if int(groups.group(1)) == self.the_game_status.get_player_id():
 			print "Winner is you"
 		else:
@@ -230,7 +237,8 @@ class Parser:
 			if groups:
 				self.proxy_handlers[i](groups)
 				return i
-		return -1 # dans le cas où un message n'est pas handled
-				# TODO, mettre des cas différents en fonction du message
+		print message
+		return -1 # dans le cas ou un message n'est pas handled
+				# TODO, mettre des cas differents en fonction du message
 		#self.the_situation.show()
 		#raise Exception("error: not handled: " + message)
