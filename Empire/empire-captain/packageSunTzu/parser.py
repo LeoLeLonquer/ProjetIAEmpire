@@ -70,6 +70,12 @@ class Parser:
 				, self.parse_city_units_limit
 				]
 
+	def kronecker_inv(x,y):
+		if x==y :
+			return 0
+		else :
+			return 1
+
 	def parse_set_visible_none(self, groups):
 		(x,y) = int(groups.group(1)), int(groups.group(2))
 		terrain =  groups.group(3)
@@ -86,7 +92,7 @@ class Parser:
 			self.the_game_status.set_player_id(city_owner)
 		if city_owner==self.the_game_status.get_player_id():
 			self.the_cities.add(city_id,City(city_id,x,y))
-		self.the_map.update_map(x,y,chr(ord('C') + city_owner))
+		self.the_map.update_map(x,y,chr(ord('C') + kronecker_inv(city_owner,the_game_status.get_player_id()))
 
 
 	def parse_set_visible_city(self, groups):
@@ -99,7 +105,7 @@ class Parser:
 		(x,y) = int(groups.group(1)), int(groups.group(2))
 		piece_owner = int(groups.group(4))
 		piece_type_id = int(groups.group(6))
-		self.the_map.update_map(x,y,chr(ord('M') + piece_type_id + piece_owner * self.the_types_of_units.get_nbpiecetype()))
+		self.the_map.update_map(x,y, chr(ord('M') +piece_type_id + self.the_types_of_units.get_nbpiecetype()*kronecker_inv(piece_owner,the_game_status.get_player_id()) ))
 
 	def parse_set_explored(self, groups):
 		(x,y) = int(groups.group(1)), int(groups.group(2))
