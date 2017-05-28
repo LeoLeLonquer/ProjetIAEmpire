@@ -4,6 +4,7 @@ import os
 import socket
 import sys
 import random
+import time
 
 from packageSunTzu import communication
 from packageSunTzu import parser
@@ -96,6 +97,7 @@ while 1:
 		piecetypeid=piece.get_piecetypeid()
 		nbmove=the_types_of_units.get_piecetype(piecetypeid).get_move()
 		while(nbmove!=0 and pieceid in the_units.get_pieces().keys()):
+			time.sleep(0.5)
 			valid=-1
 			# while (valid==-1 ):
 			(x, y) = piece.get_position()

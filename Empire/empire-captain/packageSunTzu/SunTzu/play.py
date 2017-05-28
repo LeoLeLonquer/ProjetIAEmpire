@@ -202,10 +202,6 @@ def jouer(tab_mape, type_unit, tab_context_far, tab_context_further):
         feed_dict_run = {input_layer_boat : tab_float}
         out_decision = session.run(out_decision_boat, feed_dict=feed_dict_run)
 
-    if type_unit == PATROL :
-        feed_dict_run = {input_layer_boat : tab_float}
-        out_decision = session.run(out_decision_boat, feed_dict=feed_dict_run)
-
     if type_unit == CITY :
         feed_dict_run = {input_layer_city : tab_float}
         out_decision = session.run(out_decision_city, feed_dict=feed_dict_run)
