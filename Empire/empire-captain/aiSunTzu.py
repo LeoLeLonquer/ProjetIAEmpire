@@ -14,8 +14,8 @@ from packageSunTzu import cities
 from packageSunTzu import units
 from packageSunTzu.SunTzu import play as SunTzu
 
-def ASK_SUNTZU(typeid,minimap): #TODO ATTENTION A CE TURC QUI TRAINE
-	return SunTzu.jouer(minimap,typeid)
+def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
+	return SunTzu.jouer(minimap,typeid,far_context,even_further_context)
 
 def ASK_NATHAN():
 	return 5
@@ -79,7 +79,10 @@ while 1:
 		(x,y)=city.get_pos()
 		minimap=the_map.get_centered_map(x,y)
 		far_context= the_map.get_far_context(x,y)
-		cityproduction=0#ASK_SUNTZU(-1,minimap)
+		even_further_context= the_map.get_even_further_context(x,y)
+		cityproduction=0#ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
+		print "cityprod : ",
+		print cityproduction
 		city.set_production(cityproduction)
 		city_id=city.get_cityid()
 		the_communication.action("set_city_production %d %d" % (city_id, city.production))
@@ -98,13 +101,14 @@ while 1:
 			(x, y) = piece.get_position()
 			minimap = the_map.get_centered_map(x,y)
 			far_context= the_map.get_far_context(x,y)
-			piecemove=ASK_NATHAN()#ASK_SUNTZU(piecetypeid,minimap)[0]
+			even_further_context= the_map.get_even_further_context(x,y)
+			piecemove=ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
 
-			valid= test_move(piecetypeid,(x,y),piecemove)
+			#valid= test_move(piecetypeid,(x,y),piecemove)
 			valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
 			print minimap
 			print "move %d %d" % (pieceid,piecemove)
-			print "test_move: %d  , com: %d " % (valid,valid2)
+			#print "test_move: %d  , com: %d " % (valid,valid2)
 				# if valid==-1:
 				# 	piecemove=ASK_NATHAN()
 				# 	print "move %d %d" % (pieceid,piecemove)

@@ -89,6 +89,12 @@ class Map:
 			far.append( self.interest(self.get_centered_map(xp,yp)))
 		return far
 
+	def get_even_further_context(self,x,y):
+		far=[]
+		for (xp,yp) in self.mirror_centers((x,y),2*self.half_size):
+			far.append( self.interest(self.get_centered_map(xp,yp)))
+		return far
+
 	def rotate(self,l, n):
 	    newl= [-e for e in l]
 	    return newl[-n:] + newl[:-n]
