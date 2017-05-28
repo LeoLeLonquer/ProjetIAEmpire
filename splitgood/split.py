@@ -7,7 +7,7 @@ nb_piece_type = 10 # TODO: modifier automatiquement!
 width = 44	 # TODO: modifier automatiquement!
 height = 24	# TODO: modifier automatiquement!
 half_size = 3
-filename = "out_S"
+filename = "player1"
 
 maps = [ {} , {} ]
 
@@ -25,7 +25,7 @@ lines = open(filename, "r").readlines()
 
 #direction =(q,r)=(x,y,z)=(r,-q-r,q)   : r=z axe horizontal, q=x axe diagonal Nord Ouest vers Sud-Est
 directions = [ (+1,  0), (+1, -1), ( 0, -1), (-1,  0), (-1, +1), ( 0, +1) ]
-
+			 #			#
 
 allied_units=['C','M','N','O','P','Q']
 ennemy_units=['D','W','X','Y','Z']
@@ -67,6 +67,12 @@ def print_centered_map_txt(x, y, player):
 			else:
 					print "#",
 		print ""
+
+def print_far_context_txt(x,y,player):
+	pass #TODO
+
+def print_even_further_context_txt(x,y,player):
+	pass #TODO
 
 def print_move_txt(direction, piece_type):
 	print "move %d %d" % (direction, piece_type)
@@ -118,7 +124,7 @@ def print_all_map(player):
 				print "?",
 		print ""
 
-def print_even_further_context(x,y,player):
+def print_even_further_context_py(x,y,player):
 	print "even_further_context_%d= \" " % nb_print_centered_map,
 	for (xp,yp) in mirror_centers((x,y),2*half_size):
 		print "%d " % interest(get_centered_map(xp,yp,player)),
@@ -180,6 +186,8 @@ def interest(minimap):
 			if symb == 'D' :
 				blood_to_spill=blood_to_spill+10
 			else :
+				blood_to_spill=blood_to_spill+2
+			if symb == 'M':
 				blood_to_spill=blood_to_spill+1
 	return blood_to_spill
 
@@ -192,14 +200,17 @@ def kronecker_inv(x,y):
 
 if output == "txt":
 	print_move = print_move_txt
-	print_centered_map = print_centered_map_txt
 	print_set_city_production = print_set_city_production_txt
+	print_centered_map = print_centered_map_txt
+	print_far_context = print_far_context_txt
+	print_even_further_context=print_even_further_context_txt
 elif output == "py":
 	nb_print_centered_map = 0
 	print_move = print_move_py
+	print_set_city_production = print_set_city_production_py
 	print_far_context=print_far_context_py
 	print_centered_map = print_centered_map_py
-	print_set_city_production = print_set_city_production_py
+	print_even_further_context=print_even_further_context_py
 else:
 	print "invalid output: " + output
 	sys.exit(2)
@@ -271,10 +282,10 @@ for line in lines:
 		else:
 			print "not handled: " + line
 			sys.exit(1)
-		#print_map_all(player)
-		print_far_context(x,y,player)
-		print_even_further_context(x,y,player)
-		print_centered_map(x, y, player)
+		print_all_map(player)
+		# print_far_context(x,y,player)
+		# print_even_further_context(x,y,player)
+		# print_centered_map(x, y, player)
 
 if output == "txt":
 	pass

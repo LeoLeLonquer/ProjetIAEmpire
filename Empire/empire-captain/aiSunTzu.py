@@ -18,8 +18,19 @@ def ASK_SUNTZU(typeid,minimap): #TODO ATTENTION A CE TURC QUI TRAINE
 	return SunTzu.jouer(minimap,typeid)
 
 def ASK_NATHAN():
-	return randint(0,5)
+	return 5
 
+def test_move(typeid,center,direction):
+	val=0
+	x,y=center
+	(dx,dy)= the_map.directions[direction]
+	if (x+dx,y+dy) not in the_map.get_map().keys():
+		val=-1
+	else:
+		dest = the_map.get_map()[(x+dx,y+dy)]
+		if dest not in the_types_of_units.get_piecetype(typeid).get_terrain().keys():
+			val =-1
+	return val
 
 do_debug = False
 
@@ -67,6 +78,7 @@ while 1:
 
 		(x,y)=city.get_pos()
 		minimap=the_map.get_centered_map(x,y)
+		far_context= the_map.get_far_context(x,y)
 		cityproduction=0#ASK_SUNTZU(-1,minimap)
 		city.set_production(cityproduction)
 		city_id=city.get_cityid()
@@ -85,10 +97,14 @@ while 1:
 			# while (valid==-1 ):
 			(x, y) = piece.get_position()
 			minimap = the_map.get_centered_map(x,y)
+			far_context= the_map.get_far_context(x,y)
+			piecemove=ASK_NATHAN()#ASK_SUNTZU(piecetypeid,minimap)[0]
+
+			valid= test_move(piecetypeid,(x,y),piecemove)
+			valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
 			print minimap
-			piecemove=ASK_SUNTZU(piecetypeid,minimap)
 			print "move %d %d" % (pieceid,piecemove)
-			valid=the_communication.action("move %d %d" % (pieceid,piecemove))
+			print "test_move: %d  , com: %d " % (valid,valid2)
 				# if valid==-1:
 				# 	piecemove=ASK_NATHAN()
 				# 	print "move %d %d" % (pieceid,piecemove)
