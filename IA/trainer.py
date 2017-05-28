@@ -8,12 +8,12 @@ Created on Thu May 11 10:48:31 2017
 
 import tensorflow as tf
 import numpy as np
-from result import maps,decisions_piece_type,decisions
-from result1 import maps1,decisions_piece_type1,decisions1
-from result2 import maps2, decisions_piece_type2, decisions2
-from result3 import maps3,decisions_piece_type3,decisions3
+from result import maps,decisions_piece_type,decisions, even_further_contexts,far_contexts
+from result1 import maps1,decisions_piece_type1,decisions1,even_further_contexts1,far_contexts1
+from result2 import maps2, decisions_piece_type2, decisions2,even_further_contexts2,far_contexts2
+from result3 import maps3,decisions_piece_type3,decisions3,even_further_contexts3,far_contexts3
 import os
-from result4 import maps4,decisions_piece_type4,decisions4
+from result4 import maps4,decisions_piece_type4,decisions4,even_further_contexts4,far_contexts4
 
 possible_actions = 7
 #DEF type unite
@@ -32,9 +32,10 @@ y_true_cls = tf.placeholder(tf.int64, [None])
 maps_global = [maps,maps1,maps2,maps3]
 decisions_global =[decisions,decisions1,decisions2,decisions3]
 decisions_piece_type_global = [decisions_piece_type,decisions_piece_type1,decisions_piece_type2,decisions_piece_type3]
-
-        
-first_size = 37
+far_contexts_global = [far_contexts,far_contexts1,far_contexts2,far_contexts3]
+even_further_contexts_global =[even_further_contexts,even_further_contexts1,even_further_contexts2,even_further_contexts3]
+       
+first_size = 49
 possible_actions = 7
 first_hidden_layers_size_terrestre = 48
 snd_hidden_layers_size_terrestre = 48
@@ -149,8 +150,6 @@ accuracy_boat = tf.reduce_mean(tf.cast(correct_prediction_boat, tf.float32))
 
 
 #CITY LAYER
-first_size = 37
-possible_actions = 7
 first_hidden_layers_size_city = 48 #TODO : A remplacer par le bon nombre de pocibilité
 snd_hidden_layers_size_city = 48
 
@@ -196,6 +195,26 @@ if not os.path.exists(save_dir):
     os.makedirs(save_dir)
 save_path = os.path.join(save_dir, 'best_validation')
 
+
+def concat_tab(tab1,tab2,tab3) : 
+    tail1 = len(tab1)
+    tail2 = len(tab2)
+    tail3 = len(tab3)
+    tab_retour = np.zeros(shape = (1, (tail1+tail2+tail3))) 
+    j = 0
+    for i in range(tail1):
+        tab_retour[0][j] = tab1[i]
+        j = j+1
+    for i in range(tail2):
+        tab_retour[0][j] = tab2[i]
+        j = j+1
+    for i in range(tail3):
+        tab_retour[0][j] = tab3[i]
+        j = j+1
+        
+    return tab_retour
+    
+
 def test_egalite(c1,c2):
     c7 = len(c1) *[0]
     for i in range(len(c1)) :
@@ -217,7 +236,9 @@ def predict_cls_validation():
     return predict_cls(maps = maps4,
                        labels = decisions4,
                        decisions = decisions4,
-                       decisions_piece_type = decisions_piece_type4)
+                       decisions_piece_type = decisions_piece_type4,
+                       far_contexts = far_contexts4,
+                       even_further_contexts = even_further_contexts4)
     
 def create_label_test(decisions):
     labels_create = len(decisions)*[0]
@@ -230,18 +251,27 @@ def create_label_test(decisions):
     return labels_create
 
 
-def predict_cls(maps, labels, decisions, decisions_piece_type):
+def predict_cls(maps, labels, decisions, decisions_piece_type,far_contexts,even_further_contexts):
     nb_maps = len(maps)
     decision_tab = create_label_test(decisions)
 
     cls_pred = nb_maps*[0]
     for i in range(nb_maps):
         decision_piece_type = decisions_piece_type[i]
+        far_context = far_contexts[i]
+        even_further_context = even_further_contexts[i]
         mape = maps[i]
+        tab_context_far = far_context.split()       
+                
+        tab_context_further = even_further_context.split()
+            
         tab_mape = mape.split()
-        tab_float = np.zeros(shape = (1, len(tab_mape)))
+        tab_float_map = len(tab_mape) *[0]
         for j in range(len(tab_mape)):
-            tab_float[0][j] = ord(tab_mape[j])
+            tab_float_map[j] = ord(tab_mape[j])
+        #print (tab_float_map)
+        tab_float = concat_tab(tab_float_map,tab_context_far,tab_context_further)
+        #print (tab_float)
         if decision_piece_type == ARMY :
             feed_dict_train = {input_layer_terre: tab_float,
                                    y_true: decision_tab[i]}
@@ -294,17 +324,24 @@ def optimize():
             i = 0
     #        print (session.run(first_weights_terre))
             maps = maps_global[j]
+            far_contexts = far_contexts_global[j]
+            even_further_contexts = even_further_contexts_global[j]
             decisions = decisions_global[j]
             decisions_piece_type = decisions_piece_type_global[j]
             for i in range(len(maps)):
                 #print ("Je train le coup %d" %i)
                 mape = maps[i]
-                #tab_mape = list(mape)
+                far_context = far_contexts[i]
+                even_further_context = even_further_contexts[i]
+                tab_context_far = far_context.split()                
+                tab_context_further = even_further_context.split()
                 tab_mape = mape.split()
                # print (tab_mape)
-                tab_float = np.zeros(shape = (1, len(tab_mape)))
+                tab_float = len(tab_mape) *[0]
                 for j in range(len(tab_mape)):
-                    tab_float[0][j] = ord(tab_mape[j])
+                    tab_float[j] = ord(tab_mape[j])
+               # print (tab_float)
+                tab_float = concat_tab(tab_float,tab_context_far,tab_context_further)
                # print (tab_float)
                 decision = decisions[i]
                 decision_piece_type = decisions_piece_type[i]
