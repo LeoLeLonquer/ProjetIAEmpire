@@ -39,7 +39,7 @@ first_size = 49
 possible_actions = 7
 first_hidden_layers_size_terrestre = 48
 snd_hidden_layers_size_terrestre = 48
-learning_rate = 0.45
+learning_rate = 0.6
 
 #Definition des reseaux des neurones pour unités terrestres
 #first_weights_terre = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_terrestre]))
@@ -221,7 +221,7 @@ def test_egalite(c1,c2):
         c3 = c1[i]
         c4 = c2[i]
         preci1 = np.argmax(c3)
-        preci2 = np.argmax(c4)
+        preci2 = c4[0]
 #        print(preci1)
 #        print (preci2)
 #        print("-----------------------------------------------------------------")
@@ -275,19 +275,20 @@ def predict_cls(maps, labels, decisions, decisions_piece_type,far_contexts,even_
         if decision_piece_type == ARMY :
             feed_dict_train = {input_layer_terre: tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[i] = session.run(out_layer_terre, feed_dict=feed_dict_train)
+            cls_pred[i] = session.run(out_decision_terre, feed_dict=feed_dict_train)
+            
         if decision_piece_type == FLIGHT :
             feed_dict_train = {input_layer_flight: tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[i] = session.run(out_layer_flight, feed_dict=feed_dict_train)
+            cls_pred[i] = session.run(out_decision_flight, feed_dict=feed_dict_train)
         if decision_piece_type == BOAT :
             feed_dict_train = {input_layer_boat : tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[i] = session.run(out_layer_boat, feed_dict=feed_dict_train)    
+            cls_pred[i] = session.run(out_decision_boat, feed_dict=feed_dict_train)    
         if decision_piece_type == CITY :
             feed_dict_train = {input_layer_city : tab_float,
                                    y_true: decision_tab[i]}
-            cls_pred[i] = session.run(out_layer_city, feed_dict=feed_dict_train)
+            cls_pred[i] = session.run(out_decision_city, feed_dict=feed_dict_train)
     correct = test_egalite(decision_tab,cls_pred)
 
 
@@ -318,7 +319,7 @@ session.run(tf.global_variables_initializer())
 
 def optimize():
     global best_validation_accuracy
-    for w in range(100):
+    for w in range(50):
         j = 0
         for j in range(len(maps_global)) :
             i = 0
