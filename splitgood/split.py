@@ -1,13 +1,13 @@
 import sys
 
-output = "txt"
+#output = "txt"
 output = "py"
 
 nb_piece_type = 10 # TODO: modifier automatiquement!
 width = 44	 # TODO: modifier automatiquement!
 height = 24	# TODO: modifier automatiquement!
 half_size = 3
-filename = "out_S"
+filename = "player1"
 
 maps = [ {} , {} ]
 
@@ -20,7 +20,16 @@ lines = open(filename, "r").readlines()
 #	 var dz = -dx-dy
 #	 results.append(cube_add(center, Cube(dx, dy, dz)))
 
+
+#XXX: nous sommmes dans une config pointy-top
+
+#direction =(q,r)=(x,y,z)=(r,-q-r,q)   : r=z axe horizontal, q=x axe diagonal Nord Ouest vers Sud-Est
 directions = [ (+1,  0), (+1, -1), ( 0, -1), (-1,  0), (-1, +1), ( 0, +1) ]
+			 #			#
+
+allied_units=['C','M','N','O','P','Q']
+ennemy_units=['D','W','X','Y','Z']
+
 
 def cube_ring(center, radius):
 	if radius == 0:
@@ -39,7 +48,7 @@ def cube_ring(center, radius):
 			results.append((q + radius * qa + j * qd, r + radius * ra + j * rd))
 	return results
 
-def print_map_txt(x, y, player):
+def print_centered_map_txt(x, y, player):
 	pmaps = maps[player]
 
 	tiles = []
@@ -59,21 +68,27 @@ def print_map_txt(x, y, player):
 					print "#",
 		print ""
 
+def print_far_context_txt(x,y,player):
+	pass #TODO
+
+def print_even_further_context_txt(x,y,player):
+	pass #TODO
+
 def print_move_txt(direction, piece_type):
 	print "move %d %d" % (direction, piece_type)
 
 def print_set_city_production_txt(piece_type):
 	print "set_city_production %d" % piece_type
 
-def print_map_py(x, y, player):
-	global nb_print_map
+def print_centered_map_py(x, y, player):
+	global nb_print_centered_map
 	pmaps = maps[player]
 
 	tiles = []
 	for r in range(half_size + 1):
 		tiles.extend(cube_ring((x, y), r))
 
-	print "map_%d = \"" % nb_print_map,
+	print "map_%d = \"" % nb_print_centered_map,
 	for py in range(y - half_size, y + half_size + 1):
 		for px in range(x - half_size, x + half_size + 1):
 			if (px, py) in tiles:
@@ -84,32 +99,20 @@ def print_map_py(x, y, player):
 				else:
 					print "?",
 	print "\""
-	nb_print_map = nb_print_map + 1
+	nb_print_centered_map = nb_print_centered_map + 1
 
 def print_move_py(direction, piece_type):
-	print "decision_%d = %d" % (nb_print_map, direction)
-	print "decision_piece_type_%d = %d" % (nb_print_map, piece_type)
-	print "decision_type_%d = 0" % nb_print_map
+	print "decision_%d = %d" % (nb_print_centered_map, direction)
+	print "decision_piece_type_%d = %d" % (nb_print_centered_map, piece_type)
+	print "decision_type_%d = 0" % nb_print_centered_map
 
 def print_set_city_production_py(piece_type):
-	print "decision_%d = %d" % (nb_print_map, piece_type)
-	print "decision_piece_type_%d = -1" % nb_print_map
-	print "decision_type_%d = 1" % nb_print_map
+	print "decision_%d = %d" % (nb_print_centered_map, piece_type)
+	print "decision_piece_type_%d = -1" % nb_print_centered_map
+	print "decision_type_%d = 1" % nb_print_centered_map
 
-if output == "txt":
-	print_move = print_move_txt
-	print_map = print_map_txt
-	print_set_city_production = print_set_city_production_txt
-elif output == "py":
-	nb_print_map = 0
-	print_move = print_move_py
-	print_map = print_map_py
-	print_set_city_production = print_set_city_production_py
-else:
-	print "invalid output: " + output
-	sys.exit(2)
 
-def print_map_all(player):
+def print_all_map(player):
 	pmaps = maps[player]
 	for py in range(height):
 		for px in range(width):
@@ -121,12 +124,96 @@ def print_map_all(player):
 				print "?",
 		print ""
 
+def print_even_further_context_py(x,y,player):
+	print "even_further_context_%d= \" " % nb_print_centered_map,
+	for (xp,yp) in mirror_centers((x,y),2*half_size):
+		print "%d " % interest(get_centered_map(xp,yp,player)),
+	print "\""
+
+def print_far_context_py(x,y,player):
+	print "far_context_%d = \" " % nb_print_centered_map,
+	for (xp,yp) in mirror_centers((x,y),half_size):
+		print "%d " % interest(get_centered_map(xp,yp,player)),
+	print "\""
+
+
+def print_enhanced_centered_map(x,y,player):
+	print_far_context(x,y,player)
+	print_centered_map(x,y,player)
+
+
+def get_centered_map(x, y,player):
+	tiles = []
+	minimap=[]
+	pmaps = maps[player]
+
+	for r in range(half_size + 1):
+		tiles.extend(cube_ring((x, y), r))
+
+	for py in range(y - half_size, y + half_size + 1):
+		for px in range(x - half_size, x + half_size + 1):
+			if (px, py) in tiles:
+				if px < 0 or px >= width or py < 0 or py >= height:
+					minimap.append('!')
+				elif (px, py) in pmaps:
+					minimap.append(pmaps[(px, py)])
+				else:
+					minimap.append('?')
+	return minimap
+
+
+def rotate(l, n):
+    newl= [-e for e in l]
+    return newl[-n:] + newl[:-n]
+
+def mirror_centers(center, radius):
+    x,y=center
+    list_centers=[]
+    mirror_center=[2*radius+1, -radius, -radius-1]
+    offset_mirror_center= [x+mirror_center[0],y+mirror_center[1]]
+    list_centers.append(offset_mirror_center)
+    for i in range(5):
+        mirror_center=rotate(mirror_center,1)
+        offset_mirror_center= [x+mirror_center[0],y+mirror_center[1]]
+        list_centers.append(offset_mirror_center)
+    return list_centers
+
+
+def interest(minimap):
+	blood_to_spill=0
+	for symb in minimap :
+		if symb  in ennemy_units:
+			if symb == 'D' :
+				blood_to_spill=blood_to_spill+10
+			else :
+				blood_to_spill=blood_to_spill+2
+			if symb == 'M':
+				blood_to_spill=blood_to_spill+1
+	return blood_to_spill
+
 def kronecker_inv(x,y):
 	if x==y :
 		return 0
 	else :
 		return 1
 
+
+if output == "txt":
+	print_move = print_move_txt
+	print_set_city_production = print_set_city_production_txt
+	print_centered_map = print_centered_map_txt
+	print_far_context = print_far_context_txt
+	print_even_further_context=print_even_further_context_txt
+elif output == "py":
+	nb_print_centered_map = 0
+	print_move = print_move_py
+	print_set_city_production = print_set_city_production_py
+	print_far_context=print_far_context_py
+	print_centered_map = print_centered_map_py
+	print_even_further_context=print_even_further_context_py
+else:
+	print "invalid output: " + output
+	sys.exit(2)
 
 for line in lines:
 	line = line.strip()
@@ -195,25 +282,36 @@ for line in lines:
 		else:
 			print "not handled: " + line
 			sys.exit(1)
-		print_map(x, y, player)
+		print_all_map(player)
+		# print_far_context(x,y,player)
+		# print_even_further_context(x,y,player)
+		# print_centered_map(x, y, player)
 
 if output == "txt":
 	pass
 elif output == "py":
 	print "maps = ["
-	for i in range(nb_print_map):
+	for i in range(nb_print_centered_map):
 		print "map_%d, " % i
 	print "]"
+	print "far_contexts=["
+	for i in range(nb_print_centered_map):
+		print "far_context_%d, " % i
+	print "]"
+	print "even_further_contexts=["
+	for i in range(nb_print_centered_map):
+		print "even_further_context_%d, " % i
+	print "]"
 	print "decisions = ["
-	for i in range(nb_print_map):
+	for i in range(nb_print_centered_map):
 		print "decision_%d, " % i
 	print "]"
 	print "decisions_piece_type = ["
-	for i in range(nb_print_map):
+	for i in range(nb_print_centered_map):
 		print "decision_piece_type_%d, " % i
 	print "]"
 	print "decisions_type = ["
-	for i in range(nb_print_map):
+	for i in range(nb_print_centered_map):
 		print "decision_type_%d, " % i
 	print "]"
-	nb_print_map = 0
+	nb_print_centered_map = 0

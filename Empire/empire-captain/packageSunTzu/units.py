@@ -47,11 +47,12 @@ class Pieceslist:
 
 
 class Piecetype:
-    def __init__(self,id,name,symbol,move):
+    def __init__(self,id,name,symbol,move,terrain):
         self.id=id
         self.name=name
         self.symbol=symbol
         self.move=move
+        self.terrain=terrain
 
     def get_id(self):
         return self.id
@@ -65,18 +66,22 @@ class Piecetype:
     def get_move(self):
         return self.move
 
+    def get_terrain(self):
+        return self.terrain
+
 
 
 class Piecestypeslist:
     def __init__ (self):
-        self.piecestypesdico= {0:Piecetype(0,"ARMY",'A',1),
-                               1:Piecetype(1,"FLIGHT",'F',8),
-                               2:Piecetype(2,"TRANSPORT",'T',2),
-                               3:Piecetype(3,"PATROL",'P',4),
-                               4:Piecetype(4,"BATTLESHIP",'B',2)
+        self.piecestypesdico= {0:Piecetype(0,"ARMY",'A',1,{'B':"GROUND"}),
+                               1:Piecetype(1,"FLIGHT",'F',8,{'B':'GROUND','A':"Water"}),
+                               2:Piecetype(2,"TRANSPORT",'T',2,{'A':"Water"}),
+                               3:Piecetype(3,"PATROL",'P',4,{'A':"Water"}),
+                               4:Piecetype(4,"BATTLESHIP",'B',2,{'A':"Water"})
                                }
         self.nbpiecetype=10 #TODO a modifier automatiquement
-
+        self.allied_units=['C','M','N','O','P','Q']
+        self.ennemy_units=['D','W','X','Y','Z']
 
     def get_piecestypesdico(self):
         return self.piecestypesdico
@@ -89,3 +94,9 @@ class Piecestypeslist:
             return self.piecestypesdico[piecetypeid]
         else :
             return None
+
+    def get_allied_units(self):
+        return self.allied_units
+
+    def get_ennemy_units(self):
+        return self.ennemy_units

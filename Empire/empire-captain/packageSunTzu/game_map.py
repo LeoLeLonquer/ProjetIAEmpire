@@ -1,6 +1,3 @@
-
-
-
 class Map:
 	def __init__(self):
 		self.map = {}
@@ -13,10 +10,14 @@ class Map:
 		self.width = 44	 # TODO: modifier automatiquement!
 		self.height = 24	# TODO: modifier automatiquement!
 		self.half_size = 3
-
+		self.allied_units=['C','M','N','O','P','Q']
+		self.ennemy_units=['D','W','X','Y','Z']
 
 	def get_map(self):
 		return self.map
+
+	def get_directions(self):
+		return self.directions
 
 	def get_width(self):
 		return self.width
@@ -81,3 +82,44 @@ class Map:
 				else:
 					print "?",
 			print ""
+
+	def get_far_context(self,x,y):
+		far=[]
+		for (xp,yp) in self.mirror_centers((x,y),self.half_size):
+			far.append( self.interest(self.get_centered_map(xp,yp)))
+		return far
+
+	def get_even_further_context(self,x,y):
+		far=[]
+		for (xp,yp) in self.mirror_centers((x,y),2*self.half_size):
+			far.append( self.interest(self.get_centered_map(xp,yp)))
+		return far
+
+	def rotate(self,l, n):
+	    newl= [-e for e in l]
+	    return newl[-n:] + newl[:-n]
+
+	def mirror_centers(self,center, radius):
+	    x,y=center
+	    list_centers=[]
+	    mirror_center=[2*radius+1, -radius, -radius-1]
+	    offset_mirror_center= [x+mirror_center[0],y+mirror_center[1]]
+	    list_centers.append(offset_mirror_center)
+	    for i in range(5):
+	        mirror_center=self.rotate(mirror_center,1)
+	        offset_mirror_center= [x+mirror_center[0],y+mirror_center[1]]
+	        list_centers.append(offset_mirror_center)
+	    return list_centers
+
+
+	def interest(self,minimap):
+		blood_to_spill=0
+		for symb in minimap :
+			if symb in self.ennemy_units:
+				if symb == 'D' :
+					blood_to_spill=blood_to_spill+10
+				else :
+					blood_to_spill=blood_to_spill+2
+				if symb == 'M':
+					blood_to_spill=blood_to_spill+1
+		return blood_to_spill
