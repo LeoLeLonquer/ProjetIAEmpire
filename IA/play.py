@@ -12,7 +12,7 @@ Created on Thu May 11 10:48:31 2017
 
 import tensorflow as tf
 import numpy as np
-
+import os
 #from result import maps,decisions_piece_type,decisions
 #from result1 import maps1,decisions_piece_type1,decisions1
 #from result2 import maps2, decisions_piece_type2, decisions2
@@ -34,7 +34,7 @@ y_true = tf.placeholder(tf.float32, [None, possible_actions])
 y_true_cls = tf.placeholder(tf.int64, [None])
 
         
-first_size = 37
+first_size = 49
 possible_actions = 7
 learning_rate = 0.001
 
@@ -157,8 +157,28 @@ out_decision_city= tf.argmax(out_layer_city, dimension=1) #Choix final de mouvem
 
 
 #Saver
+save_dir = 'checkpoints/'
 saver = tf.train.Saver()
-save_path = "checkpoints/best_validation"
+save_path = os.path.join(save_dir, 'best_validation')
+
+
+def concat_tab(tab1,tab2,tab3) : 
+    tail1 = len(tab1)
+    tail2 = len(tab2)
+    tail3 = len(tab3)
+    tab_retour = np.zeros(shape = (1, (tail1+tail2+tail3))) 
+    j = 0
+    for i in range(tail1):
+        tab_retour[0][j] = tab1[i]
+        j = j+1
+    for i in range(tail2):
+        tab_retour[0][j] = tab2[i]
+        j = j+1
+    for i in range(tail3):
+        tab_retour[0][j] = tab3[i]
+        j = j+1
+        
+    return tab_retour
 
 session = tf.Session()
 session.run(tf.global_variables_initializer())
@@ -167,13 +187,13 @@ session.run(tf.global_variables_initializer())
 saver.restore(sess=session, save_path=save_path)
 
 
-def jouer(tab_mape, type_unit):    
-        
-    tab_float = np.zeros(shape = (1, len(tab_mape)))
+def jouer(tab_mape, type_unit, tab_context_far, tab_context_further):    
+   
+    tab_float = len(tab_mape) *[0]
     for j in range(len(tab_mape)):
-        tab_float[0][j] = ord(tab_mape[j])
+        tab_float[j] = ord(tab_mape[j])
             
-       
+    tab_float = concat_tab(tab_float,tab_context_far,tab_context_further)
     if type_unit == ARMY :
         feed_dict_run = {input_layer_terre : tab_float}
         out_decision =session.run(out_decision_terre, feed_dict=feed_dict_run)
