@@ -36,9 +36,6 @@ y_true_cls = tf.placeholder(tf.int64, [None])
         
 first_size = 49
 possible_actions = 7
-learning_rate = 0.001
-
-
 first_hidden_layers_size_terrestre = 48
 snd_hidden_layers_size_terrestre = 48
 
@@ -125,11 +122,9 @@ out_decision_boat = tf.argmax(out_layer_boat, dimension=1) #Choix final de mouve
 
 
 #CITY LAYER
-first_size = 37
-possible_actions = 7
+
 first_hidden_layers_size_city = 48 #TODO : A remplacer par le bon nombre de pocibilité
 snd_hidden_layers_size_city = 48
-learning_rate = 0.001
 
 #Definition des reseaux des neurones pour unités terrestres
     
@@ -157,9 +152,9 @@ out_decision_city= tf.argmax(out_layer_city, dimension=1) #Choix final de mouvem
 
 
 #Saver
-save_dir = 'checkpoints/'
 saver = tf.train.Saver()
-save_path = os.path.join(save_dir, 'best_validation')
+save_path = "checkpoints/best_validation"
+
 
 
 def concat_tab(tab1,tab2,tab3) : 
