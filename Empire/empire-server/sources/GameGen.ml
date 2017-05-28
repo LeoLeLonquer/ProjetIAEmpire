@@ -189,6 +189,7 @@ let create_player config player_id =
   ; player_view = Array.make_matrix config.m_width config.m_height Unknown
   ; player_pieces = Misc.Set.of_array [||]
   ; player_cities = Misc.Set.of_array [||]
+  ; player_nb_created_units = 0
   } ;;
 
 let create_game config =
@@ -202,11 +203,15 @@ let create_game config =
     ; g_pieces = Hashtbl.create 128
     ; g_piece_types = config.m_piece_types
     ; g_round = 0
+    ; g_max_round = 100
     ; g_turn = 0
     ; g_nb_players = config.m_nb_players
     ; g_counter = 0
     ; g_mailbox = Queue.create ()
+    ; g_random = Random.int 1000000000
     ; g_end = false
+    ; g_max_nb_created_units_per_player = 100
+    ; g_max_units_per_city = 2
     } in
   (* Ajout des villes a la liste des objets et des positions. *)
   let cities = place_cities game config in

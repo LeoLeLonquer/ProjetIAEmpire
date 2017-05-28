@@ -74,6 +74,8 @@ type player =
   ; player_view : tile array array
   ; player_pieces : piece_id Misc.Set.t
   ; player_cities : city_id Misc.Set.t
+  (* Nombre d'unites crees par le joueur. Cf. config.m_max_units_per_player. *)
+  ; mutable player_nb_created_units : int
   } ;;
 
 type game =
@@ -87,10 +89,14 @@ type game =
   ; g_piece_types : (piece_type_id, piece_type) Hashtbl.t
   ; g_players : player array
   ; mutable g_round : int
+  ; g_max_round : int    (* Nombre de tours maximum de la partie. *)
   ; mutable g_turn : int (* Joueur qui a le jeton. *)
   ; mutable g_counter : int (* Pour la creation de nouveaux id. *)
   ; g_mailbox : (int * string) Queue.t (* (Jouer, message) *)
   ; mutable g_end : bool (* Indicateur de fin de partie. *)
+  ; g_random: int (* Graine aléatoire, pour affichage graphique cohérent sur tous les clients. *)
+  ; g_max_nb_created_units_per_player : int (* Nombre d'unites maximum qu'un joueur peut creer. *)
+  ; g_max_units_per_city : int   (* Nombre d'unites maximum qu'une ville peut accueillir. *)
   } ;;
 
 type config =

@@ -1,5 +1,6 @@
-Random.init 400 ;;
+(* TODO: Random.init 400 ;; *)
 (* TODO: Random.self_init () ;; *)
+Random.self_init () ;;
 
 let pick_random l = List.nth l (Random.int (List.length l)) ;;
 
@@ -101,3 +102,19 @@ module Set = struct
   let size s = s.size ;;
 
 end ;;
+
+(* Builds a string from a list of items *)
+let sep map sp ?(last_sep=sp) l =
+  let rec loop acu = function
+    | [] -> ""
+    | [x] ->
+      (* Singleton *)
+      if acu = "" then map x
+      else
+	(* Last element *)
+	acu ^ last_sep ^ (map x)
+		  
+    | x :: xs -> loop (if acu = "" then map x else acu ^ sp ^ (map x)) xs
+  in
+  loop "" l
+
