@@ -13,10 +13,10 @@ from packageSunTzu import game_map
 from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
-#from packageSunTzu.SunTzu import play as SunTzu
+from packageSunTzu import play as SunTzu
 
-# def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
-# 	return the_SunTzu.jouer(minimap,typeid,far_context,even_further_context)
+def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
+ 	return the_SunTzu.jouer(minimap,typeid,far_context,even_further_context)
 
 def ASK_NATHAN(typeid):
 	if typeid=="city":
@@ -64,7 +64,6 @@ the_units=units.Pieceslist()
 the_types_of_units=units.Piecestypeslist()
 the_parser = parser.Parser(the_game_status,the_map,the_cities,the_units,the_types_of_units)
 the_communication = communication.Communication(the_parser, server, server_fd)
-#the_SunTzu=SunTzu.Cerveau()
 
 turn = 0
 while 1:
@@ -89,7 +88,7 @@ while 1:
 		minimap=the_map.get_centered_map(x,y)
 		far_context= the_map.get_far_context(x,y)
 		even_further_context= the_map.get_even_further_context(x,y)
-		cityproduction=ASK_NATHAN("city")#ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
+		cityproduction=ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
 		print "cityprod : ",
 		print cityproduction
 		city.set_production(cityproduction)
@@ -117,20 +116,31 @@ while 1:
 			minimap = the_map.get_centered_map(x,y)
 			far_context= the_map.get_far_context(x,y)
 			even_further_context= the_map.get_even_further_context(x,y)
-			piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+			piecemove=ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
 			print "move %d %d" % (pieceid,piecemove),
 			valid= test_move(piecetypeid,(x,y),piecemove)
-			while valid==-1:
+			if valid==1:
+				print "Message envoyé"
+				valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
+
+			else:
 				print "INVALID"
-				piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
-				print "move %d %d" % (pieceid,piecemove),
-				valid= test_move(piecetypeid,(x,y),piecemove)
 
 
-			print "Message envoyé"
-			valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
-			if valid2==-1:
-				print "Erreur Envoi message mouvement"
+
+
+			#
+			# while valid==-1:
+			# 	print "INVALID"
+			# 	piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+			# 	print "move %d %d" % (pieceid,piecemove),
+			# 	valid= test_move(piecetypeid,(x,y),piecemove)
+			#
+			#
+			# print "Message envoyé"
+			# valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
+			# if valid2==-1:
+			# 	print "Erreur Envoi message mouvement"
 
 			#print minimap
 			#print "test_move: %d  , com: %d " % (valid,valid2)
