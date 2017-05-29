@@ -1,6 +1,6 @@
 import sys
 
-#output = "txt"
+# output = "txt"
 output = "py"
 
 nb_piece_type = 10 # TODO: modifier automatiquement!
@@ -188,8 +188,8 @@ def interest(minimap):
 				blood_to_spill=blood_to_spill+10
 			else :
 				blood_to_spill=blood_to_spill+2
-			if symb == 'M':
-				blood_to_spill=blood_to_spill+1
+		elif symb == 'M':
+			blood_to_spill=blood_to_spill+1
 	return blood_to_spill
 
 def kronecker_inv(x,y):
@@ -283,6 +283,7 @@ for line in lines:
 		else:
 			print "not handled: " + line
 			sys.exit(1)
+
 		#print_map_all(player)
 		print_far_context(x,y,player)
 		print_even_further_context(x,y,player)

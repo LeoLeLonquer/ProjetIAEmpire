@@ -39,7 +39,13 @@ first_size = 49
 possible_actions = 7
 first_hidden_layers_size_terrestre = 48
 snd_hidden_layers_size_terrestre = 48
-learning_rate = 0.6
+#learning_rate = 0.6
+global_step = tf.Variable(0, trainable=False)
+starter_learning_rate = 0.001
+learning_rate = tf.train.exponential_decay(starter_learning_rate, global_step,
+                                       100000, 0.96, staircase=True)
+
+# Passing global_step to minimize() will increment it at each step.
 
 #Definition des reseaux des neurones pour unités terrestres
 #first_weights_terre = tf.Variable(tf.zeros([first_size, first_hidden_layers_size_terrestre]))
@@ -70,7 +76,8 @@ out_decision_terre = tf.argmax(out_layer_terre, dimension=1) #Choix final de mou
 cross_entropy_terre = tf.nn.softmax_cross_entropy_with_logits(logits = logits_terre,
                                                         labels=y_true)
 cost_terre = tf.reduce_mean(cross_entropy_terre)
-optimizer_terre = tf.train.AdagradOptimizer(learning_rate).minimize(cost_terre)
+#optimizer_terre = tf.train.AdagradOptimizer(learning_rate).minimize(cost_terre)
+optimizer_terre=(tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_terre, global_step=global_step))
 correct_prediction_terre = tf.equal(out_decision_terre, y_true_cls)
 accuracy_terre = tf.reduce_mean(tf.cast(correct_prediction_terre, tf.float32))
 
@@ -106,7 +113,8 @@ cross_entropy_flight = tf.nn.softmax_cross_entropy_with_logits(logits = logits_f
                                                         labels=y_true)
 cost_flight = tf.reduce_mean(cross_entropy_flight)
 
-optimizer_flight = tf.train.AdagradOptimizer(learning_rate).minimize(cost_flight)
+#optimizer_flight = tf.train.AdagradOptimizer(learning_rate).minimize(cost_flight)
+optimizer_flight=(tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_flight, global_step=global_step))
 correct_prediction_flight = tf.equal(out_decision_flight, y_true_cls)
 accuracy_flight = tf.reduce_mean(tf.cast(correct_prediction_flight, tf.float32))
 
@@ -143,7 +151,8 @@ cross_entropy_boat = tf.nn.softmax_cross_entropy_with_logits(logits = logits_boa
                                                         labels=y_true)
 cost_boat = tf.reduce_mean(cross_entropy_boat)
 
-optimizer_boat = tf.train.AdagradOptimizer(learning_rate).minimize(cost_boat)
+#optimizer_boat = tf.train.AdagradOptimizer(learning_rate).minimize(cost_boat)
+optimizer_boat=(tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_boat, global_step=global_step))
 correct_prediction_boat = tf.equal(out_decision_boat, y_true_cls)
 accuracy_boat = tf.reduce_mean(tf.cast(correct_prediction_boat, tf.float32))
 
@@ -182,7 +191,8 @@ cross_entropy_city= tf.nn.softmax_cross_entropy_with_logits(logits = logits_city
                                                         labels=y_true)
 cost_city= tf.reduce_mean(cross_entropy_city)
 
-optimizer_city= tf.train.AdagradOptimizer(learning_rate).minimize(cost_city)
+#optimizer_city= tf.train.AdagradOptimizer(learning_rate).minimize(cost_city)
+optimizer_city=(tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_city, global_step=global_step))
 correct_prediction_city= tf.equal(out_decision_city, y_true_cls)
 accuracy_city= tf.reduce_mean(tf.cast(correct_prediction_city, tf.float32))
 
@@ -319,7 +329,7 @@ session.run(tf.global_variables_initializer())
 
 def optimize():
     global best_validation_accuracy
-    for w in range(50):
+    for w in range(150):
         j = 0
         for j in range(len(maps_global)) :
             i = 0

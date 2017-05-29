@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 import sys
 
@@ -179,6 +181,7 @@ class Parser:
 		self.the_cities.get_city(city_id).set_production(None)
 		(x,y) = self.the_cities.get_city(city_id).get_pos()
 		self.the_units.add(piece_id,Piece(piece_id,piece_type_id,x,y))
+		print "Unité %d créée" % piece_id
 
 
 	def parse_delete_piece(self, groups): # pas besoin de mettre a jour la map delete_piece est suivi de set_visible
@@ -233,13 +236,15 @@ class Parser:
 		pass
 
 	def parse(self, message):
+		ret=-1
 		for i in range(len(self.rexes)):
 			groups = self.rexes[i].match(message)
 			if groups:
 				self.proxy_handlers[i](groups)
-				return i
-		print message
-		return -1 # dans le cas ou un message n'est pas handled
+				ret=i
+		if ret==-1:
+			print message
+		return ret # dans le cas ou un message n'est pas handled
 				# TODO, mettre des cas differents en fonction du message
 		#self.the_situation.show()
 		#raise Exception("error: not handled: " + message)

@@ -13,24 +13,28 @@ from packageSunTzu import game_map
 from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
-from packageSunTzu.SunTzu import play as SunTzu
+#from packageSunTzu.SunTzu import play as SunTzu
 
-def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
-	return SunTzu.jouer(minimap,typeid,far_context,even_further_context)
+# def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
+# 	return the_SunTzu.jouer(minimap,typeid,far_context,even_further_context)
 
-def ASK_NATHAN():
-	return 5
+def ASK_NATHAN(typeid):
+	if typeid=="city":
+		return random.randint(0,1)
+	else:
+		return random.randint(0,5)
 
 def test_move(typeid,center,direction):
-	val=0
+	val=-1
 	x,y=center
 	(dx,dy)= the_map.directions[direction]
-	if (x+dx,y+dy) not in the_map.get_map().keys():
-		val=-1
-	else:
+	if (x+dx,y+dy) in the_map.get_map().keys():
 		dest = the_map.get_map()[(x+dx,y+dy)]
-		if dest not in the_types_of_units.get_piecetype(typeid).get_terrain().keys():
-			val =-1
+		if dest in the_types_of_units.get_piecetype(typeid).get_terrain().keys():
+			val=0
+		if typeid==0 and (dest in the_types_of_units.get_ennemy_units() or dest == 'c'):
+			val =0
+
 	return val
 
 do_debug = False
@@ -60,16 +64,20 @@ the_units=units.Pieceslist()
 the_types_of_units=units.Piecestypeslist()
 the_parser = parser.Parser(the_game_status,the_map,the_cities,the_units,the_types_of_units)
 the_communication = communication.Communication(the_parser, server, server_fd)
+#the_SunTzu=SunTzu.Cerveau()
 
 turn = 0
 while 1:
 	turn = turn + 1
 	the_communication.wait()
-
-	tools.debug("turn: %d" %  turn)
-	if do_debug: the_communication.action("dump_map")
+	print "==================="
+	print "turn %d " % turn
+	#tools.debug("turn: %d" %  turn)
+	#if do_debug: the_communication.action("dump_map")
 
 	# 1. Process cities.
+	print "cities : ",
+	print the_cities.get_cities().keys()
 	for cityid in the_cities.get_cities().keys():
 		city=the_cities.get_city(cityid)
 		if city is None :
@@ -81,15 +89,20 @@ while 1:
 		minimap=the_map.get_centered_map(x,y)
 		far_context= the_map.get_far_context(x,y)
 		even_further_context= the_map.get_even_further_context(x,y)
-		cityproduction=0#ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
+		cityproduction=ASK_NATHAN("city")#ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
 		print "cityprod : ",
 		print cityproduction
 		city.set_production(cityproduction)
 		city_id=city.get_cityid()
-		the_communication.action("set_city_production %d %d" % (city_id, city.production))
+		print "set_city_production %d %d" % (city_id, cityproduction)
+		valid=the_communication.action("set_city_production %d %d" % (city_id, cityproduction))#TODO rajouter un if valid car sinon ça ne produit plus
+		if valid==-1:
+			print "Erreur Envoi message production"
 
 	# 2. Process pieces.
+	print "units : ",
 	print the_units.get_pieces().keys()
+
 	for pieceid in the_units.get_pieces().keys():
 		piece=the_units.get_piece(pieceid)
 		if piece is None : #cette condition montre que certaines pièces ne sont pas supprimées
@@ -97,19 +110,29 @@ while 1:
 		piecetypeid=piece.get_piecetypeid()
 		nbmove=the_types_of_units.get_piecetype(piecetypeid).get_move()
 		while(nbmove!=0 and pieceid in the_units.get_pieces().keys()):
-			time.sleep(0.5)
+			#time.sleep(0.5)
 			valid=-1
 			# while (valid==-1 ):
 			(x, y) = piece.get_position()
 			minimap = the_map.get_centered_map(x,y)
 			far_context= the_map.get_far_context(x,y)
 			even_further_context= the_map.get_even_further_context(x,y)
-			piecemove=ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+			piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+			print "move %d %d" % (pieceid,piecemove),
+			valid= test_move(piecetypeid,(x,y),piecemove)
+			while valid==-1:
+				print "INVALID"
+				piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+				print "move %d %d" % (pieceid,piecemove),
+				valid= test_move(piecetypeid,(x,y),piecemove)
 
-			#valid= test_move(piecetypeid,(x,y),piecemove)
+
+			print "Message envoyé"
 			valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
-			print minimap
-			print "move %d %d" % (pieceid,piecemove)
+			if valid2==-1:
+				print "Erreur Envoi message mouvement"
+
+			#print minimap
 			#print "test_move: %d  , com: %d " % (valid,valid2)
 				# if valid==-1:
 				# 	piecemove=ASK_NATHAN()

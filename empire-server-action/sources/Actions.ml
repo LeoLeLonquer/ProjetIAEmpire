@@ -2,6 +2,8 @@ open Empire ;;
 
 exception ActionError of string ;;
 
+let soi = string_of_int
+
 (* Partie getter et tests. *)
 
 let get_piece_by_piece_id game piece_id =
@@ -178,20 +180,35 @@ let move_in_city game piece city_id =
      Si ce n'est pas possible, il ne faut pas avoir decremente le nombre de
      mouvements. *) 
   if city.c_owner = Some piece.p_owner then begin
-      piece.p_rem_moves <- piece.p_rem_moves - 1 ;
-      insert_piece_in_city game piece city
+      (* Le deplacement dans une ville n'est possible que si il reste de la place
+         dans la ville ! *)
+      if Misc.Set.size city.c_transport = game.g_max_units_per_city then
+        begin
+          let message = Printf.sprintf "city-units-limit %d" city_id in
+          Mailbox.post_message game (piece.p_owner, message)
+        end
+      else
+        begin
+          piece.p_rem_moves <- piece.p_rem_moves - 1 ;
+          insert_piece_in_city game piece city
+        end
     end else begin
       check_piece_type_terrain piece_type game.g_map.(q).(r) ;
       check_piece_can_invade game piece ;
       piece.p_rem_moves <- piece.p_rem_moves - 1 ;
       if Random.int 2 = 0 then begin
-          (* Le message invade_city est envoye avant enter_city (cf. insert_piece_in_city). *)
-          let message = Printf.sprintf "invade_city %d %d %d" city_id q r in
+          (* Le message ok-invasion est envoye avant enter_city (cf. insert_piece_in_city). *)
+          let message = Printf.sprintf "ok-invasion %d %d %d" city_id q r in
           Mailbox.post_message game (piece.p_owner, message) ;
           own_city game city piece.p_owner ;
           insert_piece_in_city game piece city
-        end else
+      end else
+        begin
+          (* Le message ko-invasion est envoye avant delete_piece (cf. delete_piece). *)
+          let message = Printf.sprintf "ko-invasion %d %d %d" city_id q r in
+          Mailbox.post_message game (piece.p_owner, message) ;
           delete_piece game piece.p_id
+        end
     end ;;
 
 (* Une piece rencontre une autre piece. Si elles sont du meme camps, la
@@ -241,7 +258,7 @@ let info_get_info_city game city_id =
       | Some (a, b) -> Printf.sprintf "s:%d,%d" a b in
   let transport =
     let ids = Misc.Set.to_list city.c_transport in
-    let ids = List.map string_of_int ids in
+    let ids = List.map soi ids in
     String.concat "#" ids in
   let q, r = city.c_loc in
   Printf.sprintf "%d %d %s %d %s" q r production city.c_visibility transport ;;
@@ -251,7 +268,7 @@ let info_get_info_piece game piece_id =
   check_piece_owner piece game.g_turn ;
   let transport =
     let ids = Misc.Set.to_list piece.p_transport in
-    let ids = List.map string_of_int ids in
+    let ids = List.map soi ids in
     String.concat "#" ids in
   let container =
     match piece.p_parent with
@@ -270,12 +287,12 @@ let info_get_info_piece_types game =
     let a_autonomy =
       match piece_type.a_autonomy with
         | None -> ""
-        | Some i -> string_of_int i in
+        | Some i -> soi i in
     let terrain_to_string = function
       | Water -> "water"
       | Ground -> "ground" in
-    let a_terrain = String.concat ":" (List.map terrain_to_string piece_type.a_terrain) in
-    let a_transportable = String.concat ":" (List.map string_of_int piece_type.a_transportable) in
+    let a_terrain = Misc.sep terrain_to_string ":" piece_type.a_terrain in
+    let a_transportable = Misc.sep soi ":" piece_type.a_transportable in
     (Printf.sprintf "%d#%s#%c#%s#%d#%d#%d#%d#%d#%s#%s#%d#%b"
       piece_type.a_id          piece_type.a_name
       piece_type.a_symbol      a_terrain
@@ -422,29 +439,57 @@ let turn_end_turn game =
   game.g_turn <- game.g_turn + 1 ;
   if game.g_turn = game.g_nb_players then begin
       let pieces_to_delete = Queue.create () in
+      (* Fonction de mise a jour de la production d'une ville. Il faut noter
+         que la nouvelle unite est effectivement produite si il reste encore
+         de la place dans la ville et si le joueur n'a pas atteint sont quota ! *)
       let update_city_round _ city =
         match city.c_owner, city.c_production with
         | _, None -> ()
         | Some owner, Some (1, piece_type_id) ->
-            let new_id = get_new_id game in
-            let piece_type = Hashtbl.find game.g_piece_types piece_type_id in
-            let piece =
-              { p_id = new_id
-              ; p_parent = ContainerCity city.c_id
-              ; p_owner = owner
-              ; p_type = piece_type_id
-              ; p_hits = piece_type.a_max_hits
-              ; p_rem_moves = piece_type.a_speed
-              ; p_transport = Misc.Set.of_array [||]
-              ; p_autonomy = piece_type.a_autonomy
-              } in
-            Misc.Set.add city.c_transport piece.p_id ;
-            Misc.Set.add game.g_players.(owner).player_pieces piece.p_id ;
-            Hashtbl.add game.g_pieces piece.p_id piece ;
-            city.c_production <- Some (0, piece_type_id) ;
-            let fmt = Printf.sprintf "create_piece %d %d %d %d" in
-            let message = fmt piece.p_id piece.p_type city.c_id piece.p_hits in
-            Mailbox.post_message game (piece.p_owner, message) ;
+            (* Recuperation du joueur pour tester et modifier le nombre d'unites qu'il a produit. *)
+            let player = game.g_players.(owner) in
+            (* Pas de production si le totale d'unites est atteint. *)
+            if player.player_nb_created_units = game.g_max_nb_created_units_per_player then
+                begin
+                  let fmt = Printf.sprintf "created-units-limit %d" in
+                  let message = fmt city.c_id in
+                  Mailbox.post_message game (owner, message) ;
+                end
+              else
+                begin
+                  (* Une unite en plus est creee. Par contre, elle "meurt" directement si il n'y
+                     a pas de places dans la ville ! *)
+                  player.player_nb_created_units <- player.player_nb_created_units + 1 ;
+                  if Misc.Set.size city.c_transport = game.g_max_units_per_city then
+                      begin
+                        city.c_production <- Some (0, piece_type_id) ;
+                        let fmt = Printf.sprintf "city-units-limit %d" in
+                        let message = fmt city.c_id in
+                        Mailbox.post_message game (owner, message) ;
+                      end
+                    else
+                      begin
+                        let new_id = get_new_id game in
+                        let piece_type = Hashtbl.find game.g_piece_types piece_type_id in
+                        let piece =
+                          { p_id = new_id
+                          ; p_parent = ContainerCity city.c_id
+                          ; p_owner = owner
+                          ; p_type = piece_type_id
+                          ; p_hits = piece_type.a_max_hits
+                          ; p_rem_moves = piece_type.a_speed
+                          ; p_transport = Misc.Set.of_array [||]
+                          ; p_autonomy = piece_type.a_autonomy
+                          } in
+                        Misc.Set.add city.c_transport piece.p_id ;
+                        Misc.Set.add game.g_players.(owner).player_pieces piece.p_id ;
+                        Hashtbl.add game.g_pieces piece.p_id piece ;
+                        city.c_production <- Some (0, piece_type_id) ;
+                        let fmt = Printf.sprintf "create_piece %d %d %d %d" in
+                        let message = fmt piece.p_id piece.p_type city.c_id piece.p_hits in
+                        Mailbox.post_message game (piece.p_owner, message) ;
+                      end
+                end
 (* TODO: fusionner ces deux cas? Pourquoi deux? *)
         | _, Some (0, piece_type_id) ->
             let piece_type = Hashtbl.find game.g_piece_types piece_type_id in
@@ -504,16 +549,37 @@ let turn_dump_map game =
   done ;
   print_endline "\n" ;;
 
+let fog_off game =
+  for r = 0 to game.g_height - 1 do
+    for q = 0 to game.g_width - 1 do  
+      View.inc_visibility game game.g_players.(game.g_turn) [ (q,r) ] ;
+      (*   View.dec_visibility game game.g_players.(game.g_turn) [ (q,r) ] *)
+    done ;
+  done ;
+  ()
+
 let turn_set_city_production game city_id piece_type_id =
   let piece_type = get_piece_type_by_piece_type_id game piece_type_id in
   let city = get_city_by_city_id game city_id in
   check_city_owner city game.g_turn ;
+  (* +IA: pour faciliter la creation des IAs, la position de la ville est
+   * affichee en plus des informations disponibles dans le message du joueur.
+   *)
+  let q, r = city.c_loc in
+  Printf.printf "action: %d -> set_city_production %d %d %d %d\n%!" game.g_turn city_id q r piece_type_id ;
+  (* -IA. *)
   city.c_production <- Some (piece_type.a_build_time, piece_type_id) ;;
 
 let turn_move game piece_id direction_id =
   let piece = get_piece_by_piece_id game piece_id in
   let old_loc = get_piece_loc game piece in
   let q, r = Coords.tile_neighbor direction_id old_loc in
+  (* +IA: pour faciliter la creation des IAs, la position de depart est
+   * affichee en plus des informations disponibles dans le message du joueur.
+   *)
+  let old_q, old_r = old_loc in
+  Printf.printf "action: %d -> move %d %d %d %d %d\n%!" game.g_turn piece_id old_q old_r direction_id piece.p_type;
+  (* -IA. *)
   check_piece_owner piece game.g_turn ;
   check_piece_can_move piece ;
   check_loc game (q, r) ;
