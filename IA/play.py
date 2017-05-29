@@ -277,7 +277,7 @@ saver.restore(sess=session, save_path=save_path)
 
 def jouer(tab_mape, type_unit, tab_context_far, tab_context_further):
 
-    tab_float = len(tab_mape) *[0]
+    tab_float = np.zeros(len(tab_mape))
     for j in range(len(tab_mape)):
         tab_float[j] = ord(tab_mape[j])
 
