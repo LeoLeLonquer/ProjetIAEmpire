@@ -187,8 +187,8 @@ def interest(minimap):
 				blood_to_spill=blood_to_spill+10
 			else :
 				blood_to_spill=blood_to_spill+2
-			if symb == 'M':
-				blood_to_spill=blood_to_spill+1
+		elif symb == 'M':
+			blood_to_spill=blood_to_spill+1
 	return blood_to_spill
 
 def kronecker_inv(x,y):

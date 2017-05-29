@@ -13,24 +13,28 @@ from packageSunTzu import game_map
 from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
-from packageSunTzu.SunTzu import play as SunTzu
+#from packageSunTzu.SunTzu import play as SunTzu
 
-def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
-	return SunTzu.jouer(minimap,typeid,far_context,even_further_context)
+# def ASK_SUNTZU(typeid,minimap,far_context,even_further_context): #TODO ATTENTION A CE TURC QUI TRAINE
+# 	return the_SunTzu.jouer(minimap,typeid,far_context,even_further_context)
 
-def ASK_NATHAN():
-	return 5
+def ASK_NATHAN(typeid):
+	if typeid=="city":
+		return random.randint(0,1)
+	else:
+		return random.randint(0,5)
 
 def test_move(typeid,center,direction):
-	val=0
+	val=-1
 	x,y=center
 	(dx,dy)= the_map.directions[direction]
-	if (x+dx,y+dy) not in the_map.get_map().keys():
-		val=-1
-	else:
+	if (x+dx,y+dy) in the_map.get_map().keys():
 		dest = the_map.get_map()[(x+dx,y+dy)]
-		if dest not in the_types_of_units.get_piecetype(typeid).get_terrain().keys():
-			val =-1
+		if dest in the_types_of_units.get_piecetype(typeid).get_terrain().keys():
+			val=0
+		if typeid==0 and (dest in the_types_of_units.get_ennemy_units() or dest == 'c'):
+			val =0
+
 	return val
 
 do_debug = False
@@ -60,6 +64,7 @@ the_units=units.Pieceslist()
 the_types_of_units=units.Piecestypeslist()
 the_parser = parser.Parser(the_game_status,the_map,the_cities,the_units,the_types_of_units)
 the_communication = communication.Communication(the_parser, server, server_fd)
+#the_SunTzu=SunTzu.Cerveau()
 
 turn = 0
 while 1:
@@ -84,7 +89,7 @@ while 1:
 		minimap=the_map.get_centered_map(x,y)
 		far_context= the_map.get_far_context(x,y)
 		even_further_context= the_map.get_even_further_context(x,y)
-		cityproduction=ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
+		cityproduction=ASK_NATHAN("city")#ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
 		print "cityprod : ",
 		print cityproduction
 		city.set_production(cityproduction)
@@ -112,16 +117,21 @@ while 1:
 			minimap = the_map.get_centered_map(x,y)
 			far_context= the_map.get_far_context(x,y)
 			even_further_context= the_map.get_even_further_context(x,y)
-			piecemove=ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+			piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
 			print "move %d %d" % (pieceid,piecemove),
 			valid= test_move(piecetypeid,(x,y),piecemove)
-			if valid!=-1:
-				print "Message envoyé"
-				valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
-				if valid2==-1:
-					print "Erreur Envoi message mouvement"
-			else:
+			while valid==-1:
 				print "INVALID"
+				piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
+				print "move %d %d" % (pieceid,piecemove),
+				valid= test_move(piecetypeid,(x,y),piecemove)
+
+
+			print "Message envoyé"
+			valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
+			if valid2==-1:
+				print "Erreur Envoi message mouvement"
+
 			#print minimap
 			#print "test_move: %d  , com: %d " % (valid,valid2)
 				# if valid==-1:

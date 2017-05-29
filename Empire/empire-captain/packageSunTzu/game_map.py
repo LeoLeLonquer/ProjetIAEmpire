@@ -83,15 +83,16 @@ class Map:
 					print "?",
 			print ""
 
-	def get_far_context(self,x,y):
-		far=[]
-		for (xp,yp) in self.mirror_centers((x,y),self.half_size):
-			far.append( self.interest(self.get_centered_map(xp,yp)))
-		return far
 
 	def get_even_further_context(self,x,y):
 		far=[]
 		for (xp,yp) in self.mirror_centers((x,y),2*self.half_size):
+			far.append( self.interest(self.get_centered_map(xp,yp)))
+		return far
+
+	def get_far_context(self,x,y):
+		far=[]
+		for (xp,yp) in self.mirror_centers((x,y),self.half_size):
 			far.append( self.interest(self.get_centered_map(xp,yp)))
 		return far
 
@@ -120,6 +121,6 @@ class Map:
 					blood_to_spill=blood_to_spill+10
 				else :
 					blood_to_spill=blood_to_spill+2
-				if symb == 'M':
-					blood_to_spill=blood_to_spill+1
+			elif symb == 'M':
+				blood_to_spill=blood_to_spill+1
 		return blood_to_spill
