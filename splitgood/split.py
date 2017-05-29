@@ -7,11 +7,12 @@ nb_piece_type = 10 # TODO: modifier automatiquement!
 width = 44	 # TODO: modifier automatiquement!
 height = 24	# TODO: modifier automatiquement!
 half_size = 3
-filename = "player1"
-
-maps = [ {} , {} ]
+filename = "out_S10"
+nom_out = 10
+maps = [ {} ,{} ]
 
 lines = open(filename, "r").readlines()
+
 
 # http://www.redblobgames.com/grids/hexagons/
 # var results = []
@@ -282,36 +283,36 @@ for line in lines:
 		else:
 			print "not handled: " + line
 			sys.exit(1)
-		#print_all_map(player)
+
+		#print_map_all(player)
 		print_far_context(x,y,player)
 		print_even_further_context(x,y,player)
-		print_all_map(player)
 		print_centered_map(x, y, player)
 
 if output == "txt":
 	pass
 elif output == "py":
-	print "maps = ["
+	print "maps%d = [" %nom_out
 	for i in range(nb_print_centered_map):
 		print "map_%d, " % i
 	print "]"
-	print "far_contexts=["
+	print "far_contexts%d=["%nom_out
 	for i in range(nb_print_centered_map):
 		print "far_context_%d, " % i
 	print "]"
-	print "even_further_contexts=["
+	print "even_further_contexts%d=["%nom_out
 	for i in range(nb_print_centered_map):
 		print "even_further_context_%d, " % i
 	print "]"
-	print "decisions = ["
+	print "decisions%d = ["%nom_out
 	for i in range(nb_print_centered_map):
 		print "decision_%d, " % i
 	print "]"
-	print "decisions_piece_type = ["
+	print "decisions_piece_type%d = ["%nom_out
 	for i in range(nb_print_centered_map):
 		print "decision_piece_type_%d, " % i
 	print "]"
-	print "decisions_type = ["
+	print "decisions_type%d = ["%nom_out
 	for i in range(nb_print_centered_map):
 		print "decision_type_%d, " % i
 	print "]"
