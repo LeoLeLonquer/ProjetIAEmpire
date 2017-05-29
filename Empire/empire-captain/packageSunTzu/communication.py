@@ -1,6 +1,5 @@
 import tools
 
-debug = tools.debug
 
 class Communication:
 
@@ -11,32 +10,27 @@ class Communication:
 		self.player_turn = False
 
 	def info(self, message):
-		debug("INFO: %s" % message)
 		assert self.player_turn
 		self.server.send(message + "\n")
 		response = self.server_fd.readline().strip()
-		debug("RESPONSE.1: %s" % response)
 		message_get_action = self.server_fd.readline().strip()
 		assert message_get_action == "get_action"
 		return response
 
 	def action(self, message):
-		debug("ACTION: %s" % message)
 		assert self.player_turn
 		assert message != "end_turn"
 		self.server.send(message + "\n")
 		response = self.server_fd.readline().strip()
-		debug("RESPONSE.1: %s" % response)
+		err=0
 		while response != "get_action":
 			valid=self.parser.parse(response)
 			if valid==-1:
-				return -1
+				err=-1
 			response = self.server_fd.readline().strip()
-			debug("RESPONSE.2: %s" % response)
-		return 0
+		return err
 
 	def end_turn(self):
-		debug("END_TURN")
 		assert self.player_turn
 		self.server.send("end_turn\n")
 		self.player_turn = False
@@ -44,9 +38,9 @@ class Communication:
 	def wait(self):
 		assert not self.player_turn
 		response = self.server_fd.readline().strip()
-		debug("RESPONSE.1: %s" % response)
 		while response != "get_action": #Tant que l'on ne demande pas au joueur de jouer
-			self.parser.parse(response)
+			valid=self.parser.parse(response)
+			if valid==-1:
+				print "Erreur wait %s" % response 
 			response = self.server_fd.readline().strip()
-			debug("RESPONSE.2: %s" % response)
 		self.player_turn = True

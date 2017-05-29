@@ -1,6 +1,6 @@
 import sys
 
-#output = "txt"
+# output = "txt"
 output = "py"
 
 nb_piece_type = 10 # TODO: modifier automatiquement!
@@ -282,10 +282,11 @@ for line in lines:
 		else:
 			print "not handled: " + line
 			sys.exit(1)
+		#print_all_map(player)
+		print_far_context(x,y,player)
+		print_even_further_context(x,y,player)
 		print_all_map(player)
-		# print_far_context(x,y,player)
-		# print_even_further_context(x,y,player)
-		# print_centered_map(x, y, player)
+		print_centered_map(x, y, player)
 
 if output == "txt":
 	pass
