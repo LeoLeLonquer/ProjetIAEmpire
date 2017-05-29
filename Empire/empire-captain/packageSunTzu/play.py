@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # <nbformat>3.0</nbformat>
 
-
-
 #!/usr/bin/env python3
 """
 Created on Thu May 11 10:48:31 2017
@@ -247,8 +245,9 @@ out_decision_city= tf.argmax(out_layer_city, dimension=1) #Choix final de mouvem
 
 #Saver
 saver = tf.train.Saver()
-save_path = "./empire-captain/packageSunTzu/checkpoints/best_validation"
-# ./empire-captain/packageSunTzu/SunTzu/
+
+#save_path = "/Users/leolelonquer/Dropbox/Etudes/Projet_tutoré/projet_IA/IA/checkpoints/best_validation"
+save_path = "checkpoints/best_validation"
 
 
 
@@ -274,12 +273,13 @@ session = tf.Session()
 session.run(tf.global_variables_initializer())
 
 #on recharge les poids
-saver.restore(sess=session, save_path=save_path)
-
+saver = tf.train.Saver()
+save_path = "checkpoints/best_validation"
+saver.restore(session,"./empire-captain/packageSunTzu/checkpoints/best_validation")
 
 def jouer(tab_mape, type_unit, tab_context_far, tab_context_further):
 
-    tab_float = len(tab_mape) *[0]
+    tab_float = np.zeros(len(tab_mape))
     for j in range(len(tab_mape)):
         tab_float[j] = ord(tab_mape[j])
 
@@ -301,11 +301,13 @@ def jouer(tab_mape, type_unit, tab_context_far, tab_context_further):
         feed_dict_run = {input_layer_city : tab_float}
         out_decision = session.run(out_decision_city, feed_dict=feed_dict_run)
 
-    if type_unit == PATROL :
-        feed_dict_run = {input_layer_patrol : tab_float}
-        out_decision = session.run(out_decision_patrol, feed_dict=feed_dict_run)
     if type_unit == TRANSPORT :
         feed_dict_run = {input_layer_transport : tab_float}
         out_decision = session.run(out_decision_transport, feed_dict=feed_dict_run)
+
+
+    if type_unit == PATROL :
+        feed_dict_run = {input_layer_patrol : tab_float}
+        out_decision = session.run(out_decision_patrol, feed_dict=feed_dict_run)
 
     return out_decision
