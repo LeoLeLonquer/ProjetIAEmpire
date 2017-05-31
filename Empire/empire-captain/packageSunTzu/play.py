@@ -11,21 +11,16 @@ Created on Thu May 11 10:48:31 2017
 import tensorflow as tf
 import numpy as np
 import os
-#from result import maps,decisions_piece_type,decisions
-#from result1 import maps1,decisions_piece_type1,decisions1
-#from result2 import maps2, decisions_piece_type2, decisions2
-#from result3 import maps3,decisions_piece_type3,decisions3
-#from result4 import maps4,decisions_piece_type4,decisions4
-#save_path =
+
 possible_actions = 7
 #DEF type unite
-#TODO : A CHANGER CECI EST POUR UN TRAIN DE TEST A CHANGER PAR LES VRAIES VALEURS
 ARMY = 0
 FLIGHT = 1
+TRANSPORT = 2
+PATROL = 3
 BOAT = 4
 CITY = -1
-PATROL = 3
-TRANSPORT = 2
+
 
 #Info de Linear
 y_true = tf.placeholder(tf.float32, [None, possible_actions])
@@ -243,13 +238,6 @@ out_layer_city= tf.sigmoid(logits_city) #Matrice avec les probabilités entre 0 
 out_decision_city= tf.argmax(out_layer_city, dimension=1) #Choix final de mouvement
 
 
-#Saver
-saver = tf.train.Saver()
-
-#save_path = "/Users/leolelonquer/Dropbox/Etudes/Projet_tutoré/projet_IA/IA/checkpoints/best_validation"
-save_path = "checkpoints/best_validation"
-
-
 
 def concat_tab(tab1,tab2,tab3) :
     tail1 = len(tab1)
@@ -269,13 +257,33 @@ def concat_tab(tab1,tab2,tab3) :
 
     return tab_retour
 
+
+#Saver
+saver = tf.train.Saver()
+
+
 session = tf.Session()
 session.run(tf.global_variables_initializer())
 
+
+
+w = session.run(first_weights_terre)
+wmin = np.min(w)
+wmax = np.max(w)
+print (wmin)
+print(wmax)
+
 #on recharge les poids
-saver = tf.train.Saver()
-save_path = "checkpoints/best_validation"
-saver.restore(session,"./empire-captain/packageSunTzu/checkpoints/best_validation")
+save_path = "./empire-captain/packageSunTzu/checkpoints/best_validation"
+#save_path = "checkpoints/best_validation"
+saver.restore(session,save_path)
+
+w = session.run(first_weights_terre)
+wmin = np.min(w)
+wmax = np.max(w)
+print (wmin)
+print(wmax)
+
 
 def jouer(tab_mape, type_unit, tab_context_far, tab_context_further):
 

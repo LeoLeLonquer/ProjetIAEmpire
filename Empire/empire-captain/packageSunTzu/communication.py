@@ -1,4 +1,3 @@
-import tools
 
 
 class Communication:
@@ -41,6 +40,6 @@ class Communication:
 		while response != "get_action": #Tant que l'on ne demande pas au joueur de jouer
 			valid=self.parser.parse(response)
 			if valid==-1:
-				print "Erreur wait %s" % response 
+				print "Erreur wait %s" % response
 			response = self.server_fd.readline().strip()
 		self.player_turn = True

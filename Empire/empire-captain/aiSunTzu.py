@@ -8,17 +8,17 @@ import time
 
 from packageSunTzu import communication
 from packageSunTzu import parser
-from packageSunTzu import tools
 from packageSunTzu import game_map
 from packageSunTzu import game_status
 from packageSunTzu import cities
 from packageSunTzu import units
-from packageSunTzu import yoloplay as SunTzu
+from packageSunTzu import play as SunTzu
+#from packageSunTzu import trainPlay as SunTzu
 
 def ASK_SUNTZU(typeid,minimap,far_context,even_further_context):
-	return the_SunTzu.jouer(minimap,typeid,far_context,even_further_context)
+	return SunTzu.jouer(minimap,typeid,far_context,even_further_context)
 
-def ASK_NATHAN(typeid):
+def ASK_RANDOM(typeid):
 	if typeid=="city":
 		return random.randint(0,1)
 	else:
@@ -64,7 +64,7 @@ the_units=units.Pieceslist()
 the_types_of_units=units.Piecestypeslist()
 the_parser = parser.Parser(the_game_status,the_map,the_cities,the_units,the_types_of_units)
 the_communication = communication.Communication(the_parser, server, server_fd)
-the_SunTzu=SunTzu.SunTzu()
+#the_SunTzu=SunTzu.SunTzu()
 
 turn = 0
 while 1:
@@ -72,10 +72,8 @@ while 1:
 	the_communication.wait()
 	print "==================="
 	print "turn %d " % turn
-	#tools.debug("turn: %d" %  turn)
-	#if do_debug: the_communication.action("dump_map")
 
-	# 1. Process cities.
+	# 1. Gestion des villes.
 	print "cities : ",
 	print the_cities.get_cities().keys()
 	for cityid in the_cities.get_cities().keys():
@@ -89,7 +87,7 @@ while 1:
 		minimap=the_map.get_centered_map(x,y)
 		far_context= the_map.get_far_context(x,y)
 		even_further_context= the_map.get_even_further_context(x,y)
-		cityproduction=ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
+		cityproduction=1#ASK_SUNTZU(-1,minimap,far_context,even_further_context)[0]
 		print "cityprod : ",
 		print cityproduction
 		city.set_production(cityproduction)
@@ -99,7 +97,7 @@ while 1:
 		if valid==-1:
 			print "Erreur Envoi message production"
 
-	# 2. Process pieces.
+	# 2. Gestion des pieces.
 	print "units : ",
 	print the_units.get_pieces().keys()
 
@@ -110,7 +108,7 @@ while 1:
 		piecetypeid=piece.get_piecetypeid()
 		nbmove=the_types_of_units.get_piecetype(piecetypeid).get_move()
 		while(nbmove!=0 and pieceid in the_units.get_pieces().keys()):
-			#time.sleep(0.5)
+			time.sleep(0.5)
 			valid=-1
 			# while (valid==-1 ):
 			(x, y) = piece.get_position()
@@ -121,36 +119,12 @@ while 1:
 			print "move %d %d" % (pieceid,piecemove),
 			valid= test_move(piecetypeid,(x,y),piecemove)
 			if valid!=-1:
-				print "Message envoyé"
+				print "envoyé"
 				valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
 			else:
 				print "INVALID"
-
-
-
-
-			#
-			# while valid==-1:
-			# 	print "INVALID"
-			# 	piecemove=ASK_NATHAN("piece")#ASK_SUNTZU(piecetypeid,minimap,far_context,even_further_context)[0]
-			# 	print "move %d %d" % (pieceid,piecemove),
-			# 	valid= test_move(piecetypeid,(x,y),piecemove)
-			#
-			#
-			# print "Message envoyé"
-			# valid2=the_communication.action("move %d %d" % (pieceid,piecemove))
-			# if valid2==-1:
-			# 	print "Erreur Envoi message mouvement"
-
-			#print minimap
-			#print "test_move: %d  , com: %d " % (valid,valid2)
-				# if valid==-1:
-				# 	piecemove=ASK_NATHAN()
-				# 	print "move %d %d" % (pieceid,piecemove)
-				# 	valid=the_communication.action("move %d %d" % (pieceid,piecemove))
-						#supprimer la dernière possibilité d'action
 						# TODO, réduire le choix d'actions jusqu'à ce qu'il ny ait plus de possibités
 			nbmove=nbmove-1
 
-	# 3. End turn.
+	# 3.Envoi de End turn.
 	the_communication.end_turn()

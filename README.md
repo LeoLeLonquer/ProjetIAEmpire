@@ -2,17 +2,15 @@
 
 > C'est lorsqu'on est environné de tous les dangers qu'il n'en faut redouter aucun.
 
-Sun Tzu, 孫子 :dragon_face:
+Sun Tzu, 孫子 :dragon:
 
 ## Versions de l'IA
 
 1. Utilisation du contexte proche seulement autour d'une unité (rayon de 3 ou plus)
 2. Ajout du contexte lointain (Grands hexagones regroupant des caractéristiques comme le nombre de villes, le nombre d'unités etc)
-3. Ajout d'un général qui définit des points d'intérêt
+3. Entrainement pendant le jeu
+4. Ajout d'un général qui définit des points d'intérêt
 
-## TODO
-
-Il faut faire une deuxième interface qui envoie les messages au jeu
 
 ## Lancer le jeu
 
@@ -20,24 +18,29 @@ Il faut faire une deuxième interface qui envoie les messages au jeu
 
 1. Lancer trois terminaux
 2. Dans un terminal
-      *  Aller dans dossier ocaml
+      *  Aller dans dossier Empire
       *  Aller dans empire-serveur
       *  Si fichier Main.native n’existe pas
           *  Faire make
       *  Lancer Main.native
 
 3. Dans les deux autres terminaux
-      * Aller dans dossier ocaml
+      * Aller dans dossier Empire
       * Aller dans empire-client
       * Si fichier Main.native n’existe pas
        	    * Faire make
       * Lancer Main.native
+<br />
+**Notes :**  Paut être effectué automatiquement dans le dossier Empire/empire-script
 
+### Utiliser les IA
+
+**Aller dans le dossier Empire/empire-script et lire les instructions du README.md dans ce dossier**
 
 ## Contrôles dans Empire
 
-* Flèches directionnelles pour se déplacer sur la map.\n
-  Ville codée par 0.\n
+* Flèches directionnelles pour se déplacer sur la map.<br />
+  Ville codée par 0.<br />
   Endroit déjà exploré : +
 
 * Deux couleurs de joueurs : jaune et rouge

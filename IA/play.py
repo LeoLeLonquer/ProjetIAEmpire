@@ -273,7 +273,7 @@ session = tf.Session()
 session.run(tf.global_variables_initializer())
 
 #on recharge les poids
-saver = tf.train.Saver()
+#saver = tf.train.Saver()
 save_path = "checkpoints/best_validation"
 saver.restore(session,"checkpoints/best_validation")
 

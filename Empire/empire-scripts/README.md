@@ -1,25 +1,24 @@
 # Lancer une partie
+* Code IA :
+    * 1 : IA Captain codée par M.Alata
+    * SunTzu : IA SunTzu codée par Nathan Balblanc, Yacine Smini, Léo Le Lonquer et Ouliana Badaoui
 
-## IA contre IA (avec algo du prof)
+1. **IA contre IA (avec algo du prof)**
 
-empire-server et empire-client doivent déjà être compilés
+    >./execute-ia.sh \[codeIA\] \[codeIA\]
 
->./execute-ia.sh 1 1
+    Exemple :
+    >./execute-ia.sh 1 SunTzu
 
-## IA contre joueur
 
-empire-server et empire-client doivent déjà être compilés
+2. **IA contre joueur**
 
->./execute-ia-player.sh 1
+  >./execute-ia-player.sh \[codeIA\]
 
-## joueur contre joueur
+3. **Joueur contre joueur**
 
-empire-server et empire-client doivent déjà être compilés
+  >./execute-player.sh
 
->./execute-player.sh
-
-## Plusieurs parties entre deux IA
-
-empire-server et empire-client doivent déjà être compilés
-
->./executes-ia.sh 1 1
+4. **Plusieurs parties entre deux IA** <br />
+  *Note: vérifier la fonction de cette commande* <br />
+  >./executes-ia.sh \[codeIA\] \[codeIA\]
